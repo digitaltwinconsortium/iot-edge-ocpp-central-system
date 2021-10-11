@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OCPPCentralStation.Models;
 using ProtocolGateway;
 using SoapCore;
 using System;
@@ -61,19 +60,12 @@ namespace OCPPCentralStation
 
             app.UseAuthorization();
 
-            app.UseSoapEndpoint<ICSService>("/service.asmx", new SoapEncoderOptions(), SoapSerializer.XmlSerializer);
+            app.UseSoapEndpoint<CentralSystemService>("/service.asmx", new SoapEncoderOptions(), SoapSerializer.XmlSerializer);
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            //Defining websocketoptions for ping/pong frames
-            var webSocketOptions = new WebSocketOptions
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(1)
-
-            };
 
             app.Use(async (context, next) =>
             {
@@ -83,10 +75,13 @@ namespace OCPPCentralStation
                 await next();
             });
 
-            //Adding Websockets
-            app.UseWebSockets(webSocketOptions);
 
-            //Adding custom websocketmiddleware to the pipeline
+            var webSocketOptions = new WebSocketOptions
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(1)
+
+            };
+            app.UseWebSockets(webSocketOptions);
             app.UseMiddleware<WebsocketMiddleware>();
 
             app.Run(async (context) =>

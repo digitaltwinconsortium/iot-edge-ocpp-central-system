@@ -531,9 +531,9 @@ namespace ChargePointOperator
 
                             foreach (var i in meterValues.MeterValue)
                             {
-                                foreach (var j in i.SampledValue)
+                                foreach (var j in i.sampledValue)
                                 {
-                                    if (Regex.IsMatch(j.Unit, @"^(W|Wh|kWh|kW)$"))
+                                    if (Regex.IsMatch(j.unit.ToString(), @"^(W|Wh|kWh|kW)$"))
                                     {
                                         MeterValueRequest meterValueRequest = new MeterValueRequest(j, chargepointName, meterValues.ConnectorId);
                                         await _gatewayClient.SendTelemetryAsync(meterValueRequest,chargepointName);
@@ -547,7 +547,7 @@ namespace ChargePointOperator
 
                             StatusNotification statusNotification = requestPayload.Payload.ToObject<StatusNotification>();
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
-                            StatusNotificationRequest statusNotificationRequest = new StatusNotificationRequest(statusNotification, chargepointName);
+                            StatusNotificationAzure statusNotificationRequest = new StatusNotificationAzure(statusNotification, chargepointName);
 
                             await _gatewayClient.SendTelemetryAsync(statusNotificationRequest,chargepointName);
 

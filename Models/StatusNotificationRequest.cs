@@ -41,7 +41,7 @@ using ChargePointOperator.Models.OCPP;
 
 namespace ChargePointOperator.Models.Internal
 {
-    public class StatusNotificationRequest
+    public class StatusNotificationAzure
     {
         public string StationChargerId { get; set; }
         public int ErrorCodeId { get; set; }
@@ -49,7 +49,7 @@ namespace ChargePointOperator.Models.Internal
         public int ConnectorId { get; set; }
         public DateTime Capturetime { get; set; }
 
-        public StatusNotificationRequest(StatusNotification statusNotification, string chargingpointId)
+        public StatusNotificationAzure(StatusNotification statusNotification, string chargingpointId)
         {
             StationChargerId = chargingpointId;
             ErrorCodeId = (int)statusNotification.ErrorCode;

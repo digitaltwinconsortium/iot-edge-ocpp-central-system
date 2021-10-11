@@ -1,25 +1,57 @@
-﻿using OCPPCentralStation.Models;
-using System;
-using System.Xml.Linq;
+﻿using System;
 
 namespace OCPPCentralStation.Controllers
 {
-    public class CSService : ICSService
+    public class CSService : CentralSystemService
     {
-            public string Test(string s)
-            {
-                Console.WriteLine("Test Method Executed!");
-                return s;
-            }
+        public AuthorizeResponse Authorize(AuthorizeRequest request)
+        {
+            throw new NotImplementedException();
+        }
 
-            public void XmlMethod(XElement xml)
-            {
-                Console.WriteLine(xml.ToString());
-            }
+        public BootNotificationResponse BootNotification(BootNotificationRequest request)
+        {
+            throw new NotImplementedException();
+        }
 
-            public WeatherForecast TestCustomModel(WeatherForecast customModel)
-            {
-                return customModel;
-            }
+        public DataTransferResponse DataTransfer(DataTransferRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DiagnosticsStatusNotificationResponse DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public FirmwareStatusNotificationResponse FirmwareStatusNotification(FirmwareStatusNotificationRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public HeartbeatResponse Heartbeat(HeartbeatRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeterValuesResponse MeterValues(MeterValuesRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public StartTransactionResponse StartTransaction(StartTransactionRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public StatusNotificationResponse StatusNotification(StatusNotificationRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public StopTransactionResponse StopTransaction(StopTransactionRequest request)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

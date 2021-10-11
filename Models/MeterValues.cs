@@ -37,7 +37,6 @@ limitations under the License.
 #endregion
 
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 
 namespace ChargePointOperator.Models.OCPP
@@ -46,34 +45,11 @@ namespace ChargePointOperator.Models.OCPP
     {
         [JsonProperty("connectorId")]
         public int ConnectorId { get; set; }
+
         [JsonProperty("transactionId")]
         public int TransactionId { get; set; }
-        [JsonProperty("meterValue")]
-        public List<MeterValue> MeterValue { get; set; }     
-    }
-    public class MeterValue
-    {
-        [JsonProperty("timestamp")]
-        public DateTime Timestamp { get; set; }
-        [JsonProperty("sampledValue")]
-        public List<SampledValue> SampledValue { get; set; }
 
-    }
-    public class SampledValue
-    {
-        [JsonProperty("value")]
-        public string Value { get; set; }
-        [JsonProperty("context")]
-        public string Context { get; set; }
-        [JsonProperty("format")]
-        public string Format { get; set; }
-        [JsonProperty("measurand")]
-        public string Measurand { get; set; }
-        [JsonProperty("phase")]
-        public string Phase { get; set; }
-        [JsonProperty("location")]
-        public string Location { get; set; }
-        [JsonProperty("unit")]
-        public string Unit { get; set; }
+        [JsonProperty("meterValue")]
+        public List<MeterValue> MeterValue { get; set; }
     }
 }

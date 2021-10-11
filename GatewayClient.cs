@@ -39,12 +39,12 @@ limitations under the License.
 
 #endregion
 
+using ChargePointOperator.Models;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ProtocolGateway.Models;
-using ProtocolGateway.Models.OCPP;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -133,7 +133,7 @@ namespace ProtocolGateway
             RequestPayload requestPayload = new RequestPayload(request);
             ResponsePayload responsePayload = null;
 
-            bootNotificationResponse = new BootNotificationResponse(Constants.BootAccepted, _bootInterval);
+            bootNotificationResponse = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, _bootInterval);
             responsePayload = new ResponsePayload(requestPayload.UniqueId, bootNotificationResponse);
             return Task.FromResult(responsePayload);
         }
@@ -151,7 +151,7 @@ namespace ProtocolGateway
             try
             {
                 RequestPayload requestPayload = (RequestPayload)request;
-                requestPayload.Payload.Add(Constants.StationChargerTag, chargepointName);
+                requestPayload.Payload.Add(StringConstants.StationChargerTag, chargepointName);
                 TwinRequestInfo twinRequestInfo = new TwinRequestInfo(requestPayload.UniqueId, requestPayload.Action);
 
                 if (_chargerTwinRequests.ContainsKey(chargepointName))

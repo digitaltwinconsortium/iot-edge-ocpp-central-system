@@ -8,20 +8,20 @@ Copyright © 2010 – 2015 Open Charge Alliance. All rights reserved.
 This document is made available under the Creative Commons Attribution-NoDerivatives 4.0 International Public License
 (https://creativecommons.org/licenses/by-nd/4.0/legalcode).
 -->
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
-                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
-                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
-                  xmlns:s="http://www.w3.org/2001/XMLSchema" 
-                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" 
-                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
-                  xmlns:tns="urn://Ocpp/Cs/2015/10/" 
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:s="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:tns="urn://Ocpp/Cs/2015/10/"
                   targetNamespace="urn://Ocpp/Cs/2015/10/"
-                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
-                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" 
-                  xmlns:wsa="http://www.w3.org/2005/08/addressing" 
-                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" 
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
                   xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
-  
+
   <wsp:Policy wsu:Id="ServicePolicy">
     <wsp:ExactlyOne>
       <wsp:All>
@@ -29,10 +29,10 @@ This document is made available under the Creative Commons Attribution-NoDerivat
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  
+
 	<wsdl:types>
     <s:schema targetNamespace="urn://Ocpp/Cs/2015/10/" elementFormDefault="qualified">
-      
+
       <!-- Begin of types shared with ChargePointService -->
       <s:simpleType name="IdToken">
         <s:annotation>
@@ -118,7 +118,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="idTag" type="tns:IdToken" minOccurs="1" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="AuthorizeResponse">
 				<s:annotation>
 					<s:documentation>Defines the Authorize.conf PDU</s:documentation>
@@ -127,7 +127,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="idTagInfo" type="tns:IdTagInfo" minOccurs="1" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="StartTransactionRequest">
 				<s:annotation>
 					<s:documentation>Defines the StartTransaction.req PDU</s:documentation>
@@ -140,7 +140,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="reservationId" type="s:int" minOccurs="0" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="StartTransactionResponse">
 				<s:annotation>
 					<s:documentation>Defines the StartTransaction.conf PDU</s:documentation>
@@ -150,7 +150,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="idTagInfo" type="tns:IdTagInfo" minOccurs="1" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 	  		<s:simpleType name="Reason">
 				<s:annotation>
 					<s:documentation>Reason for stopping a transaction</s:documentation>
@@ -169,7 +169,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="DeAuthorized"/>
 				</s:restriction>
 			</s:simpleType>
-			
+
 			<s:complexType name="StopTransactionRequest">
 				<s:annotation>
 					<s:documentation>Defines the StopTransaction.req PDU</s:documentation>
@@ -183,7 +183,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="transactionData" type="tns:MeterValue" minOccurs="0" maxOccurs="unbounded"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="StopTransactionResponse">
 				<s:annotation>
 					<s:documentation>Defines the StopTransaction.conf PDU</s:documentation>
@@ -192,13 +192,13 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="idTagInfo" type="tns:IdTagInfo" minOccurs="0" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="HeartbeatRequest">
 				<s:annotation>
 					<s:documentation>Defines the Heartbeat.req PDU</s:documentation>
 				</s:annotation>
 			</s:complexType>
-      
+
 			<s:complexType name="HeartbeatResponse">
 				<s:annotation>
 					<s:documentation>Defines the Heartbeat.conf PDU</s:documentation>
@@ -207,7 +207,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="currentTime" type="s:dateTime" minOccurs="1" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:simpleType name="ReadingContext">
 				<s:restriction base="s:string">
 					<s:enumeration value="Interruption.Begin"/>
@@ -220,7 +220,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="Trigger"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:simpleType name="Measurand">
 				<s:restriction base="s:string">
 					<s:enumeration value="Current.Export"/>
@@ -247,14 +247,14 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="Voltage"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:simpleType name="ValueFormat">
 				<s:restriction base="s:string">
 					<s:enumeration value="Raw"/>
 					<s:enumeration value="SignedData"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:simpleType name="UnitOfMeasure">
 				<s:restriction base="s:string">
 					<s:enumeration value="Celsius"/>
@@ -275,7 +275,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="Percent"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
       <s:simpleType name="Phase">
         <s:restriction base="s:string">
           <s:enumeration value="L1"/>
@@ -315,7 +315,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 			<s:element name="unit" type="tns:UnitOfMeasure" minOccurs="0" maxOccurs="1"/> <!-- default="Wh" -->
 		</s:sequence>
 	</s:complexType>
-			
+
       <s:complexType name="MeterValue">
 				<s:annotation>
 					<s:documentation>Defines single value of the meter-value-value</s:documentation>
@@ -325,7 +325,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="sampledValue" type="tns:SampledValue" minOccurs="1" maxOccurs="unbounded"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="MeterValuesRequest">
 				<s:annotation>
 					<s:documentation>Defines the MeterValues.req PDU</s:documentation>
@@ -336,13 +336,13 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="meterValue" type="tns:MeterValue" minOccurs="0" maxOccurs="unbounded"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="MeterValuesResponse">
 				<s:annotation>
 					<s:documentation>Defines the MeterValues.conf PDU</s:documentation>
 				</s:annotation>
 			</s:complexType>
-      
+
 			<s:complexType name="BootNotificationRequest">
 				<s:annotation>
 					<s:documentation>Defines the BootNotification.req PDU</s:documentation>
@@ -359,7 +359,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="meterSerialNumber" type="tns:CiString25Type" minOccurs="0" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:simpleType name="RegistrationStatus">
 				<s:annotation>
 					<s:documentation>Defines the registration-status-value</s:documentation>
@@ -370,7 +370,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="Rejected"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:complexType name="BootNotificationResponse">
 				<s:annotation>
 					<s:documentation>Defines the BootNotification.conf PDU</s:documentation>
@@ -381,7 +381,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="interval" type="s:int" minOccurs="1" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:simpleType name="ChargePointErrorCode">
 				<s:annotation>
 					<s:documentation>Defines the charge-point-error-value</s:documentation>
@@ -405,7 +405,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="WeakSignal"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:simpleType name="ChargePointStatus">
 				<s:annotation>
 					<s:documentation>Defines the charge-point-status-value</s:documentation>
@@ -422,7 +422,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="Unavailable"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:complexType name="StatusNotificationRequest">
 				<s:annotation>
 					<s:documentation>Defines the StatusNotification.req PDU</s:documentation>
@@ -437,13 +437,13 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="vendorErrorCode" type="tns:CiString50Type" minOccurs="0" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="StatusNotificationResponse">
 				<s:annotation>
 					<s:documentation>Defines the StatusNotification.conf PDU</s:documentation>
 				</s:annotation>
 			</s:complexType>
-      
+
 			<s:simpleType name="FirmwareStatus">
 				<s:annotation>
 					<s:documentation>Defines the firmware-status-value</s:documentation>
@@ -458,7 +458,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="Installing"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:complexType name="FirmwareStatusNotificationRequest">
 				<s:annotation>
 					<s:documentation>Defines the FirmwareStatusNotification.req PDU</s:documentation>
@@ -467,13 +467,13 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="status" type="tns:FirmwareStatus" minOccurs="1" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="FirmwareStatusNotificationResponse">
 				<s:annotation>
 					<s:documentation>Defines the FirmwareStatusNotification.conf PDU</s:documentation>
 				</s:annotation>
 			</s:complexType>
-      
+
 			<s:simpleType name="DiagnosticsStatus">
 				<s:annotation>
 					<s:documentation>Defines the diagnostics-status-value</s:documentation>
@@ -485,7 +485,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="Uploading"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:complexType name="DiagnosticsStatusNotificationRequest">
 				<s:annotation>
 					<s:documentation>Defines the DiagnosticsStatusNotification.req PDU</s:documentation>
@@ -494,13 +494,13 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="status" type="tns:DiagnosticsStatus" minOccurs="1" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:complexType name="DiagnosticsStatusNotificationResponse">
 				<s:annotation>
 					<s:documentation>Defines the DiagnosticsStatusNotification.conf PDU</s:documentation>
 				</s:annotation>
 			</s:complexType>
-      
+
 			<s:complexType name="DataTransferRequest">
 				<s:annotation>
 					<s:documentation>Defines the DataTransfer.req PDU</s:documentation>
@@ -511,7 +511,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="data" type="s:string" minOccurs="0" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:simpleType name="DataTransferStatus">
 				<s:annotation>
 					<s:documentation>Defines the status returned in DataTransfer.conf</s:documentation>
@@ -523,7 +523,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:enumeration value="UnknownVendorId"/>
 				</s:restriction>
 			</s:simpleType>
-      
+
 			<s:complexType name="DataTransferResponse">
 				<s:annotation>
 					<s:documentation>Defines the DataTransfer.conf PDU</s:documentation>
@@ -533,7 +533,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 					<s:element name="data" type="s:string" minOccurs="0" maxOccurs="1"/>
 				</s:sequence>
 			</s:complexType>
-      
+
 			<s:element name="chargeBoxIdentity" type="s:string"/>
 			<s:element name="authorizeRequest" type="tns:AuthorizeRequest"/>
 			<s:element name="authorizeResponse" type="tns:AuthorizeResponse"/>
@@ -642,7 +642,7 @@ This document is made available under the Creative Commons Attribution-NoDerivat
 		<wsdl:part name="parameters" element="tns:stopTransactionResponse"/>
 	</wsdl:message>
 
-	
+
 	<wsdl:portType name="CentralSystemService">
 
 	<wsdl:operation name="Authorize">

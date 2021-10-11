@@ -37,13 +37,12 @@ limitations under the License.
 
 #endregion
 
-using System;
 using Newtonsoft.Json;
-using ChargePointOperator.Models.OCPP;
+using System;
 
 namespace ChargePointOperator.Models.Internal
 {
-    
+
     public class MeterValueRequest
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -60,22 +59,22 @@ namespace ChargePointOperator.Models.Internal
             ConnectorId = connectorId;
             Capturetime = DateTime.UtcNow;
 
-            switch (sampledValue.Unit)
+            switch (sampledValue.unit)
             {
-                case "W":
-                    W = sampledValue.Value;
+                case UnitOfMeasure.W:
+                    W = sampledValue.value;
                     break;
 
-                case "Wh":
-                    Wh = sampledValue.Value;
+                case UnitOfMeasure.Wh:
+                    Wh = sampledValue.value;
                     break;
 
-                case "kWh":
-                    Wh = (decimal.Parse(sampledValue.Value) * 1000).ToString();
+                case UnitOfMeasure.kWh:
+                    Wh = (decimal.Parse(sampledValue.value) * 1000).ToString();
                     break;
 
-                case "kW":
-                    W = (decimal.Parse(sampledValue.Value) * 1000).ToString();
+                case UnitOfMeasure.kW:
+                    W = (decimal.Parse(sampledValue.value) * 1000).ToString();
                     break;
 
                 default:
