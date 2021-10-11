@@ -1,10 +1,14 @@
+using ChargePointOperator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OCPPCentralStation.Models;
+using ProtocolGateway;
 using SoapCore;
+using System;
 
 namespace OCPPCentralStation
 {
@@ -22,6 +26,23 @@ namespace OCPPCentralStation
         {
             services.AddSoapCore();
             services.AddControllers();
+
+            services.Configure<CookiePolicyOptions>(o =>
+            {
+                o.Secure = CookieSecurePolicy.Always;
+                o.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
+
+            });
+
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
+            });
+
+            //Injecting the Protocol gateway client
+            services.AddSingleton<IGatewayClient>(new GatewayClient(Configuration));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,18 +52,49 @@ namespace OCPPCentralStation
             {
                 app.UseDeveloperExceptionPage();
             }
-             
+
+            app.UseHsts();
             app.UseHttpsRedirection();
+            app.UseCookiePolicy();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseSoapEndpoint<ICSService>("/service.asmx", new SoapEncoderOptions(), SoapSerializer.XmlSerializer);
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            //Defining websocketoptions for ping/pong frames
+            var webSocketOptions = new WebSocketOptions
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(1)
+
+            };
+
+            app.Use(async (context, next) =>
+            {
+                context.Request.Headers.TryGetValue("Origin", out var origin);
+                context.Response.Headers.Append("Access-Control-Allow-Origin", origin);
+                context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+                await next();
+            });
+
+            //Adding Websockets
+            app.UseWebSockets(webSocketOptions);
+
+            //Adding custom websocketmiddleware to the pipeline
+            app.UseMiddleware<WebsocketMiddleware>();
+
+            app.Run(async (context) =>
+            {
+                if (context.Request.Path.Value.Contains("favicon.") || context.Request.Path.Value == "/")
+                    await context.Response.WriteAsync("CPO running");
+                else
+                    await context.Response.WriteAsync("Invalid Request");
             });
         }
     }
