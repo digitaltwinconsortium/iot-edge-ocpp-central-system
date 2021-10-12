@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 COPY ["OCPPCentralStation.csproj", "."]
-RUN dotnet restore "./OCPPCentralStation.csproj"
+RUN dotnet restore "./OCPPCentralStation.csproj" -r linux-arm
 COPY . .
 WORKDIR "/src/."
 RUN dotnet build "OCPPCentralStation.csproj" -c Release -o /app/build
