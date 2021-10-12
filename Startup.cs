@@ -86,8 +86,8 @@ namespace OCPPCentralStation
 
             app.Run(async (context) =>
             {
-                if (context.Request.Path.Value.Contains("favicon.") || context.Request.Path.Value == "/")
-                    await context.Response.WriteAsync("CPO running");
+                if (context.Request.Path.Value == "/")
+                    await context.Response.WriteAsync("OCPP Central Station running.");
                 else
                     await context.Response.WriteAsync("Invalid Request");
             });
