@@ -31,8 +31,7 @@
       "launchBrowser": true,
       "launchUrl": "service.asmx",
       "publishAllPorts": true,
-      "useSSL": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "useSSL": true
     }
   }
 }
