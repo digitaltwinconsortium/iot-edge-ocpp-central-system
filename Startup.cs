@@ -87,7 +87,7 @@ namespace OCPPCentralStation
             app.Run(async (context) =>
             {
                 if (context.Request.Path.Value == "/")
-                    await context.Response.WriteAsync("OCPP Central Station running.");
+                    await context.Response.WriteAsync("OCPP Central System running.");
                 else
                     await context.Response.WriteAsync("Invalid Request");
             });
