@@ -43,11 +43,12 @@ namespace ChargePointOperator.Models.OCPP.Common
 {
     public class IdTagInfo:IEquatable<IdTagInfo>
     {
-
         [JsonProperty("expiryDate")]
         public DateTime? ExpiryDate { get; set; }
+
         [JsonProperty("parentIdTag")]
         public string ParentIdTag { get; set; }
+
         [JsonProperty("status")]
         public string Status { get; set; }
 

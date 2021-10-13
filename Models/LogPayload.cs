@@ -52,31 +52,26 @@ namespace ChargePointOperator.Models
 
         public LogPayload(RequestPayload requestPayload,string chargepointName)
         {
-
             IsRequest=true;
             Command=requestPayload.Action;
             StationChargerId=int.Parse(chargepointName);
             Input= JsonConvert.SerializeObject(requestPayload.Payload);
-            
         }
-          public LogPayload(string command,ErrorPayload errorPayload,string chargepointName)
-        {
 
+        public LogPayload(string command,ErrorPayload errorPayload,string chargepointName)
+        {
             IsRequest=false;
             Command=command;
             StationChargerId=int.Parse(chargepointName);
             Input= JsonConvert.SerializeObject(errorPayload.Payload);
-
         }
 
-         public LogPayload(string command,ResponsePayload responsePayload,string stationChargerId)
+        public LogPayload(string command,ResponsePayload responsePayload,string stationChargerId)
         {
-            
             IsRequest=false;
             Command=command;
             StationChargerId=int.Parse(stationChargerId);
             Input=JsonConvert.SerializeObject(responsePayload.Payload);
-
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OCPPCentralStation.Controllers;
 using ProtocolGateway;
 using SoapCore;
 using System;
@@ -41,7 +42,8 @@ namespace OCPPCentralStation
             });
 
             //Injecting the Protocol gateway client
-            services.AddSingleton<IGatewayClient>(new GatewayClient(Configuration));
+            services.AddSingleton<ICloudGatewayClient>(new IoTHubClient(Configuration));
+            services.AddSingleton<CentralSystemService>(new SOAPMiddleware());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

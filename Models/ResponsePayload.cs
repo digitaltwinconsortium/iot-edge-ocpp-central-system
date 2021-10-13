@@ -44,13 +44,11 @@ namespace ProtocolGateway.Models
     {
         public ResponsePayload(string uniqueId, object payload)
         {
-
             MessageTypeId = 3;
             UniqueId = uniqueId;
             Payload = JObject.FromObject(payload);
             WrappedPayload = new JArray { MessageTypeId, UniqueId, Payload };
         }
-
 
         public ResponsePayload(JArray payload)
         {
@@ -58,7 +56,5 @@ namespace ProtocolGateway.Models
             UniqueId = payload[1].ToString();
             Payload = (JObject)payload[2];
         }
-
     }
-
 }

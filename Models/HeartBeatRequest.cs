@@ -53,5 +53,4 @@ namespace ChargePointOperator.Models.Internal
             Capturetime = DateTime.UtcNow;
         }
     }
-
 }

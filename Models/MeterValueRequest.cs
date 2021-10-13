@@ -42,15 +42,18 @@ using System;
 
 namespace ChargePointOperator.Models.Internal
 {
-
     public class MeterValueRequest
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Wh { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string W { get; set; }
+        
         public string StationChargerId { get; set; }
+        
         public DateTime Capturetime { get; set; }
+        
         public int ConnectorId { get; set; }
 
         public MeterValueRequest(SampledValue sampledValue, string chargingpointId, int connectorId)
@@ -80,8 +83,6 @@ namespace ChargePointOperator.Models.Internal
                 default:
                     break;
             }
-
         }
     }
-
 }

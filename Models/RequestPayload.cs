@@ -60,7 +60,5 @@ namespace ProtocolGateway.Models
             Action = request.GetValue("Action").ToString();
             Payload = (JObject)request.GetValue("Payload");
         }
-
-
     }
 }

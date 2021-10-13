@@ -44,9 +44,13 @@ namespace ChargePointOperator.Models.Internal
     public class StatusNotificationAzure
     {
         public string StationChargerId { get; set; }
+        
         public int ErrorCodeId { get; set; }
+        
         public int StatusId { get; set; }
+        
         public int ConnectorId { get; set; }
+        
         public DateTime Capturetime { get; set; }
 
         public StatusNotificationAzure(StatusNotification statusNotification, string chargingpointId)
@@ -58,6 +62,4 @@ namespace ChargePointOperator.Models.Internal
             Capturetime = DateTime.UtcNow;
         }
     }
-
-
 }

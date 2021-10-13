@@ -41,6 +41,7 @@ namespace ProtocolGateway.Models
     public class TwinRequestInfo
     {
         public string UniqueId { get; set; }
+ 
         public string Action { get; set; }
 
         public TwinRequestInfo(string uniqueId,string action)

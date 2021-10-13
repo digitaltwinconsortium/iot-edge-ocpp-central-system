@@ -44,7 +44,9 @@ namespace  ProtocolGateway.Models
      public class ErrorPayload : BasePayload
     {
         public string ErrorCode { get; set; }
+
         public string ErrorDescription { get; set; }
+        
         public new JArray WrappedPayload => new JArray() { MessageTypeId, UniqueId, ErrorCode, ErrorDescription, Payload };
 
         public ErrorPayload(string uniqueId)
@@ -52,9 +54,6 @@ namespace  ProtocolGateway.Models
             MessageTypeId = 4;
             UniqueId = uniqueId;
         }
-
-       
-
 
         public ErrorPayload(string uniqueId,string errorCode)
         {
@@ -73,7 +72,5 @@ namespace  ProtocolGateway.Models
             ErrorDescription = payload[3].ToString();
             Payload = (JObject)payload[4];
         }
-
     }
-
 }

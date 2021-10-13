@@ -76,22 +76,19 @@ namespace ChargePointOperator
 
         private List<string> knownChargers = new List<string>();
         public static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
-        private IGatewayClient _gatewayClient;
+        private ICloudGatewayClient _gatewayClient;
         private string _logURL;
 
         #endregion
 
         #region Constructors
-        public WebsocketMiddleware(RequestDelegate next,IConfiguration configuration,IGatewayClient gatewayClient)
+        public WebsocketMiddleware(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
         {
             _next = next;
             _configuration = configuration;
-
             _logURL = _configuration["LogURL"];
-            _logger=new Logger();
-
-            _gatewayClient =gatewayClient;
-            _gatewayClient.SetSendToChargepointMethod(CallSendMethodAsync);
+            _logger = new Logger();
+            _gatewayClient = gatewayClient;
         }
 
         public WebsocketMiddleware()
@@ -494,7 +491,11 @@ namespace ChargePointOperator
 
                         case "BootNotification":
 
-                            responsePayload = await _gatewayClient.SendBootNotificationAsync(requestPayload, chargepointName);
+                            BootNotificationRequest bootNotificationRequest = new BootNotificationRequest();
+                            await _gatewayClient.SendTelemetryAsync(bootNotificationRequest, chargepointName);
+
+                            BootNotificationResponse bootNotificationResponse = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 120);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, bootNotificationResponse);
                             break;
 
                         case "Authorize":
@@ -514,10 +515,10 @@ namespace ChargePointOperator
 
                         case "Heartbeat":
 
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
                             HeartBeatRequest heartBeatRequest = new HeartBeatRequest(chargepointName);
-
                             await _gatewayClient.SendTelemetryAsync(heartBeatRequest, chargepointName);
+                            
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
                             break;
 
                         case "MeterValues":
@@ -754,7 +755,9 @@ namespace ChargePointOperator
                             }
 
                             if (response != null)
+                            {
                                 await SendPayloadToChargerAsync(chargepointName, response, webSocket);
+                            }
                         }
                     }
                     catch (Exception e)
@@ -807,18 +810,6 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,$"LogPayload for {logPayload.Command}",e);
             }
-        }
-
-        /// <summary>
-        /// This method calls the SendPayloadToCharger, this is used in the GatewayClient
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="responsePayload"></param>
-        /// <returns></returns>
-
-        private async Task CallSendMethodAsync(string chargepointName,object responsePayload)
-        {
-            await SendPayloadToChargerAsync(chargepointName,responsePayload,activeCharger[chargepointName].WebSocket);
         }
     }
 }

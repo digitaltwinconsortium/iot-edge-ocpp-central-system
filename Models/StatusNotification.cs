@@ -42,25 +42,27 @@ using System;
 
 namespace ChargePointOperator.Models.OCPP
 {
-   
-        public class StatusNotification
-        {
-            [JsonProperty("connectorId")]
-            public int ConnectorId { get; set; }
-            [JsonProperty("errorCode")]
-            public ChargerErrorCode ErrorCode { get; set; }
-            [JsonProperty("info")]
-            public string Info { get; set; }
-            [JsonProperty("status")]
-            public ChargerStatusType Status { get; set; }
-            [JsonProperty("timestamp")]
-            public DateTime Timestamp { get; set; }
-            [JsonProperty("vendorId")]
-            public string VendorId { get; set; }
-            [JsonProperty("vendorErrorCode")]
-            public string VendorErrorCode { get; set; }
-
-        }
-
-    
+    public class StatusNotification
+    {
+        [JsonProperty("connectorId")]
+        public int ConnectorId { get; set; }
+  
+        [JsonProperty("errorCode")]
+        public ChargerErrorCode ErrorCode { get; set; }
+            
+        [JsonProperty("info")]
+        public string Info { get; set; }
+            
+        [JsonProperty("status")]
+        public ChargerStatusType Status { get; set; }
+            
+        [JsonProperty("timestamp")]
+        public DateTime Timestamp { get; set; }
+            
+        [JsonProperty("vendorId")]
+        public string VendorId { get; set; }
+            
+        [JsonProperty("vendorErrorCode")]
+        public string VendorErrorCode { get; set; }
+    }
 }

@@ -51,7 +51,6 @@ namespace ProtocolGateway
 
         public Logger()
         {
-            
         }
 
         public void LogError(string chargepointName,string methodName,Exception exception)
@@ -89,5 +88,4 @@ namespace ProtocolGateway
             _logger.Warn(warning);
         }
     }
-    
 }

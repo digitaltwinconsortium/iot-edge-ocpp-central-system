@@ -37,22 +37,15 @@ limitations under the License.
 #endregion
 
 using ProtocolGateway.Models;
-using System;
 using System.Threading.Tasks;
 
 namespace ProtocolGateway
 {
-    public interface IGatewayClient
+    public interface ICloudGatewayClient
     {
-        void SetSendToChargepointMethod(Func<string,object,Task> action);
-
-        Task<ResponsePayload> SendBootNotificationAsync(RequestPayload requestPayload,string chargepointName);
-
         Task SendTransactionMessageAsync(RequestPayload requestPayload,string chargepointName);
 
         Task SendTelemetryAsync(object requestPayload,string chargepointName);
-
-        void RemoveChargepointAsync(string chargepointName);
 
         Task CloseAsync();
     }
