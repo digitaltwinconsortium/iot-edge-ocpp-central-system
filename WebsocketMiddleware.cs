@@ -336,6 +336,7 @@ namespace ChargePointOperator
                 _logger.LogError(chargepointName,"ReceiveDataFromChargerAsync",e);
 
             }
+
             _logger.LogDebug($"Exiting Receive method for charger {chargepointName}");
             return null;
         }
@@ -372,7 +373,6 @@ namespace ChargePointOperator
             }
 
             charger.WebsocketBusy = false;
-
         }
 
         /// <summary>
@@ -400,6 +400,7 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,"ProcessPayload",e);
             }
+
             _logger.LogDebug($"Exiting processpayload method for charger {chargepointName}");
             return null;
         }
@@ -456,8 +457,8 @@ namespace ChargePointOperator
 
                _logger.LogError(chargepointName,"JsonValidation",e);
             }
-            _logger.LogDebug($"Exiting Jsonvalidation for {chargepointName}");
 
+            _logger.LogDebug($"Exiting Jsonvalidation for {chargepointName}");
             return response;
         }
 
@@ -493,25 +494,22 @@ namespace ChargePointOperator
 
                         case "BootNotification":
 
-                            responsePayload = await _gatewayClient.SendBootNotificationAsync(requestPayload,chargepointName);
-
+                            responsePayload = await _gatewayClient.SendBootNotificationAsync(requestPayload, chargepointName);
                             break;
 
                         case "Authorize":
 
-                            await _gatewayClient.SendTransactionMessageAsync(requestPayload,chargepointName);
-
+                            await _gatewayClient.SendTransactionMessageAsync(requestPayload, chargepointName);
                             break;
 
                         case "StartTransaction":
 
-                           await _gatewayClient.SendTransactionMessageAsync(requestPayload,chargepointName);
-
+                            await _gatewayClient.SendTransactionMessageAsync(requestPayload, chargepointName);
                             break;
 
                         case "StopTransaction":
 
-                           await _gatewayClient.SendTransactionMessageAsync(requestPayload,chargepointName);
+                            await _gatewayClient.SendTransactionMessageAsync(requestPayload, chargepointName);
                             break;
 
                         case "Heartbeat":
@@ -519,12 +517,10 @@ namespace ChargePointOperator
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
                             HeartBeatRequest heartBeatRequest = new HeartBeatRequest(chargepointName);
 
-                            await _gatewayClient.SendTelemetryAsync(heartBeatRequest,chargepointName);
-
+                            await _gatewayClient.SendTelemetryAsync(heartBeatRequest, chargepointName);
                             break;
 
                         case "MeterValues":
-
 
                             MeterValues meterValues = requestPayload.Payload.ToObject<MeterValues>();
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
@@ -541,6 +537,7 @@ namespace ChargePointOperator
                                 }
 
                             }
+
                             break;
 
                         case "StatusNotification":
@@ -549,19 +546,21 @@ namespace ChargePointOperator
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
                             StatusNotificationAzure statusNotificationRequest = new StatusNotificationAzure(statusNotification, chargepointName);
 
-                            await _gatewayClient.SendTelemetryAsync(statusNotificationRequest,chargepointName);
-
+                            await _gatewayClient.SendTelemetryAsync(statusNotificationRequest, chargepointName);
                             break;
 
                         case "DataTransfer":
+
                             //<Placeholder>
                             break;
 
                         case "DiagnosticsStatusNotification":
+
                             //<Placeholder>
                             break;
 
                         case "FirmwareStatusNotification":
+
                             //<Placeholder>
                             break;
 
@@ -569,23 +568,22 @@ namespace ChargePointOperator
 
                             responsePayload = new ErrorPayload(requestPayload.UniqueId, StringConstants.NotImplemented);
                             break;
-
                     }
 
-                    if(responsePayload!=null)
+                    if (responsePayload != null)
                     {
-                    if (((BasePayload)responsePayload).MessageTypeId == 3)
-                    {
-                        ResponsePayload response = (ResponsePayload)responsePayload;
-                        await LogPayloads(new LogPayload(action, response, chargepointName), chargepointName);
-                        return response.WrappedPayload;
-                    }
-                    else
-                    {
-                        ErrorPayload error = (ErrorPayload)responsePayload;
-                        await LogPayloads(new LogPayload(action, error, chargepointName), chargepointName);
-                        return error.WrappedPayload;
-                    }
+                        if (((BasePayload)responsePayload).MessageTypeId == 3)
+                        {
+                            ResponsePayload response = (ResponsePayload)responsePayload;
+                            await LogPayloads(new LogPayload(action, response, chargepointName), chargepointName);
+                            return response.WrappedPayload;
+                        }
+                        else
+                        {
+                            ErrorPayload error = (ErrorPayload)responsePayload;
+                            await LogPayloads(new LogPayload(action, error, chargepointName), chargepointName);
+                            return error.WrappedPayload;
+                        }
                     }
 
                 }
@@ -595,7 +593,6 @@ namespace ChargePointOperator
                     GetErrorPayload(isValidPayload, errorPayload);
 
                     await LogPayloads(new LogPayload(action,errorPayload, chargepointName), chargepointName);
-
                     return errorPayload.WrappedPayload;
                 }
             }
@@ -603,9 +600,9 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,$"ProcessREquestPayload for action {action}",e);
             }
+
             _logger.LogDebug($"Exiting Process request payload for {chargepointName}");
             return null;
-
         }
 
         /// <summary>
@@ -621,7 +618,6 @@ namespace ChargePointOperator
             await Task.Delay(1000);
             //Placeholder to process response payloads from charger for CentralSystem initiated commands
             _logger.LogDebug($"Exiting Process response payload for {chargepointName}");
-
         }
 
 
@@ -678,6 +674,7 @@ namespace ChargePointOperator
                 errorPayload.Payload = JObject.FromObject(new { Error = response.Errors });
             else
                 errorPayload.Payload = JObject.FromObject(new object());
+
             errorPayload.ErrorDescription = string.Empty;
 
             if (response.CustomErrors != null)
@@ -708,7 +705,6 @@ namespace ChargePointOperator
                         break;
                 }
 
-
         }
 
         /// <summary>
@@ -723,7 +719,6 @@ namespace ChargePointOperator
 
             try
             {
-
                 while (webSocket.State == WebSocketState.Open)
                 {
                     try
@@ -760,7 +755,6 @@ namespace ChargePointOperator
 
                             if (response != null)
                                 await SendPayloadToChargerAsync(chargepointName, response, webSocket);
-
                         }
                     }
                     catch (Exception e)
@@ -773,6 +767,7 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,"HandlePayloads",e);
             }
+
             _logger.LogDebug($"Exiting HandlePayloads method for {chargepointName}");
         }
 
@@ -786,8 +781,7 @@ namespace ChargePointOperator
         /// <returns></returns>
         private async Task LogPayloads(LogPayload logPayload, string chargepointName)
         {
-
-            //Incase LogURL is not provided
+            //In case LogURL is not provided
             if(string.IsNullOrEmpty(_logURL))
                 return;
 
@@ -813,7 +807,6 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,$"LogPayload for {logPayload.Command}",e);
             }
-
         }
 
         /// <summary>
