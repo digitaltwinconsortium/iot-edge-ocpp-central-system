@@ -11,7 +11,7 @@
 
 
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.ServiceContractAttribute(Namespace="urn://Ocpp/Cs/2015/10/", ConfigurationName="CentralSystemService")]
+[System.ServiceModel.ServiceContractAttribute(Namespace="urn://Ocpp/Cs/2012/06/", ConfigurationName="CentralSystemService")]
 public interface CentralSystemService
 {
     
@@ -21,7 +21,7 @@ public interface CentralSystemService
     AuthorizeResponse Authorize(AuthorizeRequest request);
     
     // CODEGEN: Generating message contract since the operation has multiple return values.
-    [System.ServiceModel.OperationContractAttribute(Action="/BootNotification", ReplyAction="/BootNotificationResponse")]
+    [System.ServiceModel.OperationContractAttribute(Action="/bootNotificationRequest", ReplyAction="/bootNotificationResponse")]
     [System.ServiceModel.XmlSerializerFormatAttribute()]
     BootNotificationResponse BootNotification(BootNotificationRequest request);
     
@@ -71,7 +71,7 @@ public interface CentralSystemService
 [System.SerializableAttribute()]
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public partial class IdTagInfo
 {
     
@@ -143,7 +143,7 @@ public partial class IdTagInfo
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum AuthorizationStatus
 {
     
@@ -168,7 +168,7 @@ public enum AuthorizationStatus
 [System.SerializableAttribute()]
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public partial class SampledValue
 {
     
@@ -384,7 +384,7 @@ public partial class SampledValue
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum ReadingContext
 {
     
@@ -422,7 +422,7 @@ public enum ReadingContext
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum ValueFormat
 {
     
@@ -436,7 +436,7 @@ public enum ValueFormat
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum Measurand
 {
     
@@ -527,7 +527,7 @@ public enum Measurand
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum Phase
 {
     
@@ -571,7 +571,7 @@ public enum Phase
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum Location
 {
     
@@ -594,7 +594,7 @@ public enum Location
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum UnitOfMeasure
 {
     
@@ -652,7 +652,7 @@ public enum UnitOfMeasure
 [System.SerializableAttribute()]
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public partial class MeterValue
 {
     
@@ -692,14 +692,14 @@ public partial class MeterValue
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="authorizeRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="authorizeRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class AuthorizeRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public string idTag;
     
     public AuthorizeRequest()
@@ -716,11 +716,11 @@ public partial class AuthorizeRequest
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="authorizeResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="authorizeResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class AuthorizeResponse
 {
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public IdTagInfo idTagInfo;
     
     public AuthorizeResponse()
@@ -736,7 +736,7 @@ public partial class AuthorizeResponse
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum RegistrationStatus
 {
     
@@ -752,38 +752,38 @@ public enum RegistrationStatus
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.MessageContractAttribute(WrapperName="bootNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="bootNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class BootNotificationRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public string chargePointVendor;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public string chargePointModel;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=2)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=2)]
     public string chargePointSerialNumber;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=3)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=3)]
     public string chargeBoxSerialNumber;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=4)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=4)]
     public string firmwareVersion;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=5)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=5)]
     public string iccid;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=6)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=6)]
     public string imsi;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=7)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=7)]
     public string meterType;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=8)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=8)]
     public string meterSerialNumber;
     
     public BootNotificationRequest()
@@ -807,17 +807,17 @@ public partial class BootNotificationRequest
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.MessageContractAttribute(WrapperName="bootNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="bootNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class BootNotificationResponse
 {
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public RegistrationStatus status;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public System.DateTime currentTime;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=2)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=2)]
     public int interval;
     
     public BootNotificationResponse()
@@ -835,7 +835,7 @@ public partial class BootNotificationResponse
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum DataTransferStatus
 {
     
@@ -854,20 +854,20 @@ public enum DataTransferStatus
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.MessageContractAttribute(WrapperName="dataTransferRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="dataTransferRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class DataTransferRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public string vendorId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public string messageId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=2)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=2)]
     public string data;
     
     public DataTransferRequest()
@@ -885,14 +885,14 @@ public partial class DataTransferRequest
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.MessageContractAttribute(WrapperName="dataTransferResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="dataTransferResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class DataTransferResponse
 {
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public DataTransferStatus status;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public string data;
     
     public DataTransferResponse()
@@ -909,7 +909,7 @@ public partial class DataTransferResponse
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum DiagnosticsStatus
 {
     
@@ -929,14 +929,14 @@ public enum DiagnosticsStatus
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="diagnosticsStatusNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="diagnosticsStatusNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class DiagnosticsStatusNotificationRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public DiagnosticsStatus status;
     
     public DiagnosticsStatusNotificationRequest()
@@ -953,7 +953,7 @@ public partial class DiagnosticsStatusNotificationRequest
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="diagnosticsStatusNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="diagnosticsStatusNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class DiagnosticsStatusNotificationResponse
 {
     
@@ -965,7 +965,7 @@ public partial class DiagnosticsStatusNotificationResponse
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum FirmwareStatus
 {
     
@@ -994,14 +994,14 @@ public enum FirmwareStatus
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="firmwareStatusNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="firmwareStatusNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class FirmwareStatusNotificationRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public FirmwareStatus status;
     
     public FirmwareStatusNotificationRequest()
@@ -1018,7 +1018,7 @@ public partial class FirmwareStatusNotificationRequest
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="firmwareStatusNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="firmwareStatusNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class FirmwareStatusNotificationResponse
 {
     
@@ -1030,11 +1030,11 @@ public partial class FirmwareStatusNotificationResponse
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="heartbeatRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="heartbeatRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class HeartbeatRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
     public HeartbeatRequest()
@@ -1050,11 +1050,11 @@ public partial class HeartbeatRequest
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="heartbeatResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="heartbeatResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class HeartbeatResponse
 {
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public System.DateTime currentTime;
     
     public HeartbeatResponse()
@@ -1070,20 +1070,20 @@ public partial class HeartbeatResponse
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="meterValuesRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="meterValuesRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class MeterValuesRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public int connectorId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public int transactionId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=2)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=2)]
     [System.Xml.Serialization.XmlElementAttribute("meterValue")]
     public MeterValue[] meterValue;
     
@@ -1103,7 +1103,7 @@ public partial class MeterValuesRequest
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="meterValuesResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="meterValuesResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class MeterValuesResponse
 {
     
@@ -1114,26 +1114,26 @@ public partial class MeterValuesResponse
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.MessageContractAttribute(WrapperName="startTransactionRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="startTransactionRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class StartTransactionRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public int connectorId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public string idTag;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=2)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=2)]
     public System.DateTime timestamp;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=3)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=3)]
     public int meterStart;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=4)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=4)]
     public int reservationId;
     
     public StartTransactionRequest()
@@ -1153,14 +1153,14 @@ public partial class StartTransactionRequest
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-[System.ServiceModel.MessageContractAttribute(WrapperName="startTransactionResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="startTransactionResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class StartTransactionResponse
 {
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public int transactionId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public IdTagInfo idTagInfo;
     
     public StartTransactionResponse()
@@ -1177,7 +1177,7 @@ public partial class StartTransactionResponse
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum ChargePointStatus
 {
     
@@ -1212,7 +1212,7 @@ public enum ChargePointStatus
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum ChargePointErrorCode
 {
     
@@ -1268,32 +1268,32 @@ public enum ChargePointErrorCode
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="statusNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="statusNotificationRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class StatusNotificationRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public int connectorId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public ChargePointStatus status;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=2)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=2)]
     public ChargePointErrorCode errorCode;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=3)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=3)]
     public string info;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=4)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=4)]
     public System.DateTime timestamp;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=5)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=5)]
     public string vendorId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=6)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=6)]
     public string vendorErrorCode;
     
     public StatusNotificationRequest()
@@ -1316,7 +1316,7 @@ public partial class StatusNotificationRequest
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="statusNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="statusNotificationResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class StatusNotificationResponse
 {
     
@@ -1328,7 +1328,7 @@ public partial class StatusNotificationResponse
 /// <remarks/>
 [System.CodeDom.Compiler.GeneratedCodeAttribute("svcutil", "4.8.3928.0")]
 [System.SerializableAttribute()]
-[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+[System.Xml.Serialization.XmlTypeAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
 public enum Reason
 {
     
@@ -1369,29 +1369,29 @@ public enum Reason
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="stopTransactionRequest", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="stopTransactionRequest", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class StopTransactionRequest
 {
     
-    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2015/10/")]
+    [System.ServiceModel.MessageHeaderAttribute(Namespace="urn://Ocpp/Cs/2012/06/")]
     public string chargeBoxIdentity;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public int transactionId;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=1)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=1)]
     public string idTag;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=2)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=2)]
     public System.DateTime timestamp;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=3)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=3)]
     public int meterStop;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=4)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=4)]
     public Reason reason;
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=5)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=5)]
     [System.Xml.Serialization.XmlElementAttribute("transactionData")]
     public MeterValue[] transactionData;
     
@@ -1414,11 +1414,11 @@ public partial class StopTransactionRequest
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
 [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-[System.ServiceModel.MessageContractAttribute(WrapperName="stopTransactionResponse", WrapperNamespace="urn://Ocpp/Cs/2015/10/", IsWrapped=true)]
+[System.ServiceModel.MessageContractAttribute(WrapperName="stopTransactionResponse", WrapperNamespace="urn://Ocpp/Cs/2012/06/", IsWrapped=true)]
 public partial class StopTransactionResponse
 {
     
-    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2015/10/", Order=0)]
+    [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn://Ocpp/Cs/2012/06/", Order=0)]
     public IdTagInfo idTagInfo;
     
     public StopTransactionResponse()

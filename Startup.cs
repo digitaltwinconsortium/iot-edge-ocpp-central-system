@@ -9,6 +9,7 @@ using OCPPCentralStation.Controllers;
 using ProtocolGateway;
 using SoapCore;
 using System;
+using System.ServiceModel.Channels;
 
 namespace OCPPCentralStation
 {
@@ -27,19 +28,12 @@ namespace OCPPCentralStation
             services.AddSoapCore();
             services.AddControllers();
 
-            services.Configure<CookiePolicyOptions>(o =>
-            {
-                o.Secure = CookieSecurePolicy.Always;
-                o.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
-
-            });
-
-            services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(365);
-            });
+            //services.AddHsts(options =>
+            //{
+            //    options.Preload = true;
+            //    options.IncludeSubDomains = true;
+            //    options.MaxAge = TimeSpan.FromDays(365);
+            //});
 
             //Injecting the Protocol gateway client
             services.AddSingleton<ICloudGatewayClient>(new IoTHubClient(Configuration));
@@ -54,15 +48,13 @@ namespace OCPPCentralStation
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHsts();
-            app.UseHttpsRedirection();
-            app.UseCookiePolicy();
+            //app.UseHsts();
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
-            app.UseSoapEndpoint<CentralSystemService>("/service.asmx", new SoapEncoderOptions(), SoapSerializer.XmlSerializer);
+            SoapEncoderOptions options = new SoapEncoderOptions();
+            options.MessageVersion = MessageVersion.Soap12WSAddressingAugust2004;
+            app.UseSoapEndpoint<CentralSystemService>("/service.asmx", options, SoapSerializer.XmlSerializer);
 
             app.UseEndpoints(endpoints =>
             {

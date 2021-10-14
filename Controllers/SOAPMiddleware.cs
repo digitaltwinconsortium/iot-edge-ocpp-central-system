@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace OCPPCentralStation.Controllers
 {
@@ -6,12 +7,18 @@ namespace OCPPCentralStation.Controllers
     {
         public AuthorizeResponse Authorize(AuthorizeRequest request)
         {
-            throw new NotImplementedException();
+            IdTagInfo info = new IdTagInfo
+            {
+                expiryDateSpecified = false,
+                status = AuthorizationStatus.Accepted
+            };
+            return new AuthorizeResponse(info);
         }
 
         public BootNotificationResponse BootNotification(BootNotificationRequest request)
         {
-            throw new NotImplementedException();
+            Debug.WriteLine("Identity: " + request.chargeBoxIdentity + " point#: " + request.chargePointSerialNumber);
+            return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
         }
 
         public DataTransferResponse DataTransfer(DataTransferRequest request)

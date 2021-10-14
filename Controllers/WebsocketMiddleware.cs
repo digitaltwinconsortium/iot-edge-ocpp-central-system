@@ -72,7 +72,6 @@ namespace ChargePointOperator
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
         private readonly Logger _logger;
-        HttpContext context;
 
         private List<string> knownChargers = new List<string>();
         public static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
@@ -104,25 +103,17 @@ namespace ChargePointOperator
         /// <returns></returns>
         public async Task Invoke(HttpContext httpContext)
         {
-
-            context = httpContext;
-
             try
             {
                 _logger.LogInformation("Request starting");
 
-                //Only accepts url that contains /ocpp
-                if (httpContext.Request.Path.Value.Contains(StringConstants.RequestPath))
+                if (httpContext.WebSockets.IsWebSocketRequest)
+                {
+                    await HandleWebsockets(httpContext);
+                    return;
+                }
 
-                    //Only accepts websocket request
-                    if (httpContext.WebSockets.IsWebSocketRequest)
-                    {
-                        await HandleWebsockets(httpContext);
-
-                        return;
-                    }
-
-                //Request passed on to next middleware
+                // passed on to next middleware
                 await _next(httpContext);
             }
             catch (Exception e)
@@ -191,7 +182,7 @@ namespace ChargePointOperator
 
                 if (!knownChargers.Contains(chargepointName))
                 {
-                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
                         return;
                 }
 
@@ -494,7 +485,7 @@ namespace ChargePointOperator
                             BootNotificationRequest bootNotificationRequest = new BootNotificationRequest();
                             await _gatewayClient.SendTelemetryAsync(bootNotificationRequest, chargepointName);
 
-                            BootNotificationResponse bootNotificationResponse = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 120);
+                            BootNotificationResponse bootNotificationResponse = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, bootNotificationResponse);
                             break;
 
