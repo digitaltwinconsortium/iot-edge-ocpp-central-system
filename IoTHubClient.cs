@@ -18,12 +18,10 @@ namespace ProtocolGateway
     public class IoTHubClient : ICloudGatewayClient
     {
         private static ModuleClient _client;
-        private readonly IConfiguration _configuration;
         private static Logger _logger;
 
         public IoTHubClient(IConfiguration configuration)
         {
-            _configuration = configuration;
             _logger = new Logger();
 
             try

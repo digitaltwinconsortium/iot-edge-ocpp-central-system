@@ -374,8 +374,7 @@ namespace ChargePointOperator
 
                         case "BootNotification":
 
-                            BootNotificationRequest bootNotificationRequest = new BootNotificationRequest();
-                            await _gatewayClient.SendTelemetryAsync(bootNotificationRequest, chargepointName);
+                            await _gatewayClient.SendTelemetryAsync(requestPayload, chargepointName);
 
                             BootNotificationResponse bootNotificationResponse = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, bootNotificationResponse);
