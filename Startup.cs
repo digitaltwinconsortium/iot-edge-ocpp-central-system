@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OCPP15;
+using OCPP16;
 using OCPPCentralStation.Controllers;
 using ProtocolGateway;
 using SoapCore;
@@ -37,7 +39,8 @@ namespace OCPPCentralStation
 
             //Injecting the Protocol gateway client
             services.AddSingleton<ICloudGatewayClient>(new IoTHubClient(Configuration));
-            services.AddSingleton<CentralSystemService>(new SOAPMiddleware());
+            services.AddSingleton<I_OCPP_CentralSystemService_15>(new SOAPMiddlewareOCPP15());
+            services.AddSingleton<I_OCPP_CentralSystemService_16>(new SOAPMiddlewareOCPP16());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,7 +57,8 @@ namespace OCPPCentralStation
 
             SoapEncoderOptions options = new SoapEncoderOptions();
             options.MessageVersion = MessageVersion.Soap12WSAddressing10;
-            app.UseSoapEndpoint<CentralSystemService>("/service.asmx", options, SoapSerializer.XmlSerializer);
+            app.UseSoapEndpoint<I_OCPP_CentralSystemService_15>("/ocpp/1/5.asmx", options, SoapSerializer.XmlSerializer);
+            app.UseSoapEndpoint<I_OCPP_CentralSystemService_16>("/ocpp/1/6.asmx", options, SoapSerializer.XmlSerializer);
 
             app.UseEndpoints(endpoints =>
             {
@@ -76,7 +80,7 @@ namespace OCPPCentralStation
 
             };
             app.UseWebSockets(webSocketOptions);
-            app.UseMiddleware<WebsocketMiddleware>();
+            app.UseMiddleware<WebsocketJsonMiddlewareOCPP16>();
 
             app.Run(async (context) =>
             {

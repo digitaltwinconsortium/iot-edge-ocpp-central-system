@@ -37,6 +37,7 @@ limitations under the License.
 #endregion
 
 using Newtonsoft.Json;
+using OCPP16;
 using System.Collections.Generic;
 
 namespace ChargePointOperator.Models.OCPP

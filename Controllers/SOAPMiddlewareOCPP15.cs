@@ -1,9 +1,10 @@
-﻿using System;
+﻿using OCPP15;
+using System;
 using System.Diagnostics;
 
 namespace OCPPCentralStation.Controllers
 {
-    public class SOAPMiddleware : CentralSystemService
+    public class SOAPMiddlewareOCPP15 : I_OCPP_CentralSystemService_15
     {
         public AuthorizeResponse Authorize(AuthorizeRequest request)
         {

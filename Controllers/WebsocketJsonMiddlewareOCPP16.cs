@@ -39,7 +39,6 @@ limitations under the License.
 
 #endregion
 
-#region Libraries
 using ChargePointOperator.Models;
 using Microsoft.AspNetCore.Http;
 using System.Net.WebSockets;
@@ -62,13 +61,12 @@ using ProtocolGateway;
 using ProtocolGateway.Models;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-#endregion
+using OCPP16;
 
 namespace ChargePointOperator
 {
-    public class WebsocketMiddleware
+    public class WebsocketJsonMiddlewareOCPP16
     {
-        #region Members
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
         private readonly Logger _logger;
@@ -78,10 +76,7 @@ namespace ChargePointOperator
         private ICloudGatewayClient _gatewayClient;
         private string _logURL;
 
-        #endregion
-
-        #region Constructors
-        public WebsocketMiddleware(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
+        public WebsocketJsonMiddlewareOCPP16(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
         {
             _next = next;
             _configuration = configuration;
@@ -90,11 +85,9 @@ namespace ChargePointOperator
             _gatewayClient = gatewayClient;
         }
 
-        public WebsocketMiddleware()
+        public WebsocketJsonMiddlewareOCPP16()
         {
         }
-
-        #endregion
 
         /// <summary>
         /// This method handles all the http request passed on by the previous middleware
@@ -508,7 +501,7 @@ namespace ChargePointOperator
 
                             HeartBeatRequest heartBeatRequest = new HeartBeatRequest(chargepointName);
                             await _gatewayClient.SendTelemetryAsync(heartBeatRequest, chargepointName);
-                            
+
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
                             break;
 

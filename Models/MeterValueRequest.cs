@@ -38,6 +38,7 @@ limitations under the License.
 #endregion
 
 using Newtonsoft.Json;
+using OCPP16;
 using System;
 
 namespace ChargePointOperator.Models.Internal
@@ -49,11 +50,11 @@ namespace ChargePointOperator.Models.Internal
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string W { get; set; }
-        
+
         public string StationChargerId { get; set; }
-        
+
         public DateTime Capturetime { get; set; }
-        
+
         public int ConnectorId { get; set; }
 
         public MeterValueRequest(SampledValue sampledValue, string chargingpointId, int connectorId)
