@@ -29,7 +29,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "service.asmx",
+      "launchUrl": "",
       "publishAllPorts": true,
       "useSSL": true
     }
