@@ -16,52 +16,52 @@ namespace OCPP16
     {
 
         // CODEGEN: Generating message contract since the wrapper name (authorizeRequest) of message AuthorizeRequest does not match the default value (Authorize)
-        [System.ServiceModel.OperationContractAttribute(Action = "/Authorize", ReplyAction = "/AuthorizeResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/authorizeRequest", ReplyAction = "/authorizeResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         AuthorizeResponse Authorize(AuthorizeRequest request);
 
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action = "/BootNotification", ReplyAction = "/BootNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/bootNotificationRequest", ReplyAction = "/bootNotificationResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         BootNotificationResponse BootNotification(BootNotificationRequest request);
 
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action = "/DataTransfer", ReplyAction = "/DataTransferResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/dataTransferRequest", ReplyAction = "/dataTransferResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         DataTransferResponse DataTransfer(DataTransferRequest request);
 
         // CODEGEN: Generating message contract since the wrapper name (diagnosticsStatusNotificationRequest) of message DiagnosticsStatusNotificationRequest does not match the default value (DiagnosticsStatusNotification)
-        [System.ServiceModel.OperationContractAttribute(Action = "/DiagnosticsStatusNotification", ReplyAction = "/DiagnosticsStatusNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/diagnosticsStatusNotificationRequest", ReplyAction = "/diagnosticsStatusNotificationResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         DiagnosticsStatusNotificationResponse DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest request);
 
         // CODEGEN: Generating message contract since the wrapper name (firmwareStatusNotificationRequest) of message FirmwareStatusNotificationRequest does not match the default value (FirmwareStatusNotification)
-        [System.ServiceModel.OperationContractAttribute(Action = "/FirmwareStatusNotification", ReplyAction = "/FirmwareStatusNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/firmwareStatusNotificationRequest", ReplyAction = "/firmwareStatusNotificationResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         FirmwareStatusNotificationResponse FirmwareStatusNotification(FirmwareStatusNotificationRequest request);
 
         // CODEGEN: Generating message contract since the wrapper name (heartbeatRequest) of message HeartbeatRequest does not match the default value (Heartbeat)
-        [System.ServiceModel.OperationContractAttribute(Action = "/Heartbeat", ReplyAction = "/HeartbeatResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/heartbeatRequest", ReplyAction = "/heartbeatResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         HeartbeatResponse Heartbeat(HeartbeatRequest request);
 
         // CODEGEN: Generating message contract since the wrapper name (meterValuesRequest) of message MeterValuesRequest does not match the default value (MeterValues)
-        [System.ServiceModel.OperationContractAttribute(Action = "/MeterValues", ReplyAction = "/MeterValuesResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/meterValuesRequest", ReplyAction = "/meterValuesResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         MeterValuesResponse MeterValues(MeterValuesRequest request);
 
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action = "/StartTransaction", ReplyAction = "/StartTransactionResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/startTransactionRequest", ReplyAction = "/startTransactionResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         StartTransactionResponse StartTransaction(StartTransactionRequest request);
 
         // CODEGEN: Generating message contract since the wrapper name (statusNotificationRequest) of message StatusNotificationRequest does not match the default value (StatusNotification)
-        [System.ServiceModel.OperationContractAttribute(Action = "/StatusNotification", ReplyAction = "/StatusNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/statusNotificationRequest", ReplyAction = "/statusNotificationResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         StatusNotificationResponse StatusNotification(StatusNotificationRequest request);
 
         // CODEGEN: Generating message contract since the wrapper name (stopTransactionRequest) of message StopTransactionRequest does not match the default value (StopTransaction)
-        [System.ServiceModel.OperationContractAttribute(Action = "/StopTransaction", ReplyAction = "/StopTransactionResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action = "/stopTransactionRequest", ReplyAction = "/stopTransactionResponse")]
         [System.ServiceModel.XmlSerializerFormatAttribute()]
         StopTransactionResponse StopTransaction(StopTransactionRequest request);
     }
