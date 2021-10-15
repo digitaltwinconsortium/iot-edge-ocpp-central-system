@@ -53,7 +53,7 @@ namespace OCPPCentralStation
             app.UseRouting();
 
             SoapEncoderOptions options = new SoapEncoderOptions();
-            options.MessageVersion = MessageVersion.Soap12WSAddressingAugust2004;
+            options.MessageVersion = MessageVersion.Soap12WSAddressing10;
             app.UseSoapEndpoint<CentralSystemService>("/service.asmx", options, SoapSerializer.XmlSerializer);
 
             app.UseEndpoints(endpoints =>

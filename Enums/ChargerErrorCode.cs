@@ -65,7 +65,5 @@ namespace ChargePointOperator.Models.OCPP.Enums
         Reserved=23,
         Unavailable=24,
         Faulted=25
-
-
     }
 }

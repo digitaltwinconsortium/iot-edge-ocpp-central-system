@@ -41,7 +41,6 @@ namespace ChargePointOperator.Models.OCPP.Enums
 {
     public enum ChargerStatusType
     {
-        
         Available=1,
         Preparing=2,
         Charging=3,
@@ -51,6 +50,5 @@ namespace ChargePointOperator.Models.OCPP.Enums
         Reserved=7,
         Unavailable=8,
         Faulted=9
-
     }
 }
