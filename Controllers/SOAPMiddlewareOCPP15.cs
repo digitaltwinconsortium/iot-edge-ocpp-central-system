@@ -29,21 +29,6 @@ namespace OCPPCentralStation.Controllers
             return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
         }
 
-        public DataTransferResponse DataTransfer(DataTransferRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DiagnosticsStatusNotificationResponse DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public FirmwareStatusNotificationResponse FirmwareStatusNotification(FirmwareStatusNotificationRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
         public HeartbeatResponse Heartbeat(HeartbeatRequest request)
         {
             Console.WriteLine("Heartbeat received from: " + request.chargeBoxIdentity);
@@ -102,6 +87,21 @@ namespace OCPPCentralStation.Controllers
             Console.WriteLine("Chargepoint " + request.chargeBoxIdentity + " and connector " + request.connectorId + " status#: " + request.status.ToString());
 
             return new StatusNotificationResponse();
+        }
+
+        public DataTransferResponse DataTransfer(DataTransferRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DiagnosticsStatusNotificationResponse DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public FirmwareStatusNotificationResponse FirmwareStatusNotification(FirmwareStatusNotificationRequest request)
+        {
+            throw new NotImplementedException();
         }
     }
 }

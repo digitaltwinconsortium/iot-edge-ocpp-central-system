@@ -55,7 +55,6 @@ namespace ProtocolGateway
     public class IoTHubClient : ICloudGatewayClient
     {
         private static ModuleClient _client;
-        private static Dictionary<string, TwinRequestInfo> _chargerTwinRequests = new Dictionary<string, TwinRequestInfo>();
         private readonly IConfiguration _configuration;
         private static Logger _logger;
 
@@ -87,11 +86,6 @@ namespace ProtocolGateway
                 await _client.CloseAsync();
                 _client = null;
             }
-
-            if (_chargerTwinRequests.Count != 0)
-            {
-                _chargerTwinRequests.Clear();
-            }
         }
 
         /// <summary>
@@ -108,17 +102,6 @@ namespace ProtocolGateway
             {
                 RequestPayload requestPayload = (RequestPayload)request;
                 requestPayload.Payload.Add(StringConstants.StationChargerTag, chargepointName);
-                TwinRequestInfo twinRequestInfo = new TwinRequestInfo(requestPayload.UniqueId, requestPayload.Action);
-
-                if (_chargerTwinRequests.ContainsKey(chargepointName))
-                {
-                    _chargerTwinRequests[chargepointName] = twinRequestInfo;
-                }
-                else
-                {
-                    _chargerTwinRequests.Add(chargepointName, twinRequestInfo);
-                }
-
                 TwinCollection twins = new TwinCollection();
                 twins[requestPayload.Action] = requestPayload.Payload;
                 if (_client != null)

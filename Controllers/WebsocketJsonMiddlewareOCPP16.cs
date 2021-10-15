@@ -51,12 +51,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Schema;
-using ChargePointOperator.Models.OCPP;
 using System.Text.RegularExpressions;
 using System.Net.Http;
 using System.Net;
 using System.Collections.Concurrent;
-using ChargePointOperator.Models.Internal;
 using ProtocolGateway;
 using ProtocolGateway.Models;
 using Microsoft.Extensions.Configuration;
@@ -499,39 +497,35 @@ namespace ChargePointOperator
 
                         case "Heartbeat":
 
-                            HeartBeatRequest heartBeatRequest = new HeartBeatRequest(chargepointName);
-                            await _gatewayClient.SendTelemetryAsync(heartBeatRequest, chargepointName);
+                            await _gatewayClient.SendTelemetryAsync(requestPayload, chargepointName);
 
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
                             break;
 
                         case "MeterValues":
 
-                            MeterValues meterValues = requestPayload.Payload.ToObject<MeterValues>();
+                            MeterValuesRequest meterValues = requestPayload.Payload.ToObject<MeterValuesRequest>();
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
 
-                            foreach (var i in meterValues.MeterValue)
+                            foreach (var i in meterValues.meterValue)
                             {
                                 foreach (var j in i.sampledValue)
                                 {
                                     if (Regex.IsMatch(j.unit.ToString(), @"^(W|Wh|kWh|kW)$"))
                                     {
-                                        MeterValueRequest meterValueRequest = new MeterValueRequest(j, chargepointName, meterValues.ConnectorId);
-                                        await _gatewayClient.SendTelemetryAsync(meterValueRequest,chargepointName);
+                                        await _gatewayClient.SendTelemetryAsync(j,chargepointName);
                                     }
                                 }
-
                             }
 
                             break;
 
                         case "StatusNotification":
 
-                            StatusNotification statusNotification = requestPayload.Payload.ToObject<StatusNotification>();
+                            StatusNotificationRequest statusNotification = requestPayload.Payload.ToObject<StatusNotificationRequest>();
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
-                            StatusNotificationAzure statusNotificationRequest = new StatusNotificationAzure(statusNotification, chargepointName);
-
-                            await _gatewayClient.SendTelemetryAsync(statusNotificationRequest, chargepointName);
+                            
+                            await _gatewayClient.SendTelemetryAsync(statusNotification, chargepointName);
                             break;
 
                         case "DataTransfer":
