@@ -57,8 +57,8 @@ namespace OCPPCentralStation
 
             SoapEncoderOptions options = new SoapEncoderOptions();
             options.MessageVersion = MessageVersion.Soap12WSAddressing10;
-            app.UseSoapEndpoint<I_OCPP_CentralSystemService_15>("/ocpp/1/5.asmx", options, SoapSerializer.XmlSerializer);
-            app.UseSoapEndpoint<I_OCPP_CentralSystemService_16>("/ocpp/1/6.asmx", options, SoapSerializer.XmlSerializer);
+            app.UseSoapEndpoint<I_OCPP_CentralSystemService_15>("/ocpp/centralsystem/1/5.asmx", options, SoapSerializer.XmlSerializer);
+            app.UseSoapEndpoint<I_OCPP_CentralSystemService_16>("/ocpp/centralsystem/1/6.asmx", options, SoapSerializer.XmlSerializer);
 
             app.UseEndpoints(endpoints =>
             {
