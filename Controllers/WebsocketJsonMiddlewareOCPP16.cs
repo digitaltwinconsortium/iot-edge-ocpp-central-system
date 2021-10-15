@@ -1,43 +1,7 @@
-﻿/*****************************************************************************************************************
- * Author: Ajantha Dhanasekaran
- * Date: 07-Sept-2020
- * Purpose: Middleware to handle websocket connections and payload from the OCPP charger client.
- * Change History:
- * Name                         Date                    Change description
- * Ajantha Dhanasekaran         07-Sept-2020              Initial version
- * Ajantha Dhanasekaran         09-Sept-2020              Enabled json validation
- * Ajantha Dhanasekaran         15-Sept-2020              Enabled common logger
- * Ajantha Dhanasekaran         16-Sept-2020              Misc. logger changes
- * ****************************************************************************************************************/
-
-
-#region license
-
-/*
-Cognizant EV Charging Protocol Gateway 1.0
-© 2020 Cognizant. All rights reserved.
-"Cognizant EV Charging Protocol Gateway 1.0" by Cognizant  is licensed under Apache License Version 2.0
-
-
+﻿/*
 Copyright 2020 Cognizant
-
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Copyright 2021 Microsoft Corporation
 */
-
-#endregion
 
 using ChargePointOperator.Models;
 using Microsoft.AspNetCore.Http;
@@ -87,11 +51,6 @@ namespace ChargePointOperator
         {
         }
 
-        /// <summary>
-        /// This method handles all the http request passed on by the previous middleware
-        /// </summary>
-        /// <param name="httpContext"></param>
-        /// <returns></returns>
         public async Task Invoke(HttpContext httpContext)
         {
             try
@@ -114,15 +73,9 @@ namespace ChargePointOperator
                 httpContext.Response.StatusCode=StatusCodes.Status500InternalServerError;
                 await httpContext.Response.WriteAsync("Something went wrong!!. Please check with the Central system admin");
             }
+   
             _logger.LogDebug("Request finished.");
         }
-
-        /// <summary>
-        /// This method verifies whether the charger supports protoc0l OCPP1.6 or not
-        /// </summary>
-        /// <param name="httpContext"></param>
-        /// <param name="chargepointName">charger Id</param>
-        /// <returns></returns>
 
         private async Task<bool> CheckProtocolAsync(HttpContext httpContext, string chargepointName)
         {
@@ -150,17 +103,8 @@ namespace ChargePointOperator
             await socket.CloseOutputAsync(WebSocketCloseStatus.ProtocolError, errorMessage, CancellationToken.None);
 
             return false;
-
         }
 
-
-        #region WebsocketHandler
-
-        /// <summary>
-        /// This method accepts the websocket connnetion from the charger and adds it to the active chargers
-        /// </summary>
-        /// <param name="httpContext"></param>
-        /// <returns></returns>
         private async Task HandleWebsockets(HttpContext httpContext)
         {
             _logger.LogDebug($"Entering HandleWebsockets method");
@@ -231,12 +175,6 @@ namespace ChargePointOperator
 
         }
 
-        /// <summary>
-        /// This method handles all the active websocket connections
-        /// </summary>
-        /// <param name="webSocket"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private async Task HandleActiveConnection(WebSocket webSocket, string chargepointName)
         {
             _logger.LogDebug($"Entering HandleActiveConnections method for {chargepointName}");
@@ -257,16 +195,6 @@ namespace ChargePointOperator
             _logger.LogDebug($"Exiting HandleActiveConnections method for {chargepointName}");
         }
 
-        #endregion
-
-        #region PayloadHandler
-
-        /// <summary>
-        /// This method receives data from the charger through websocket
-        /// </summary>
-        /// <param name="webSocket"></param>
-        /// <param name="chargepointName">charger Id</param>
-        /// <returns></returns>
         private async Task<string> ReceiveDataFromChargerAsync(WebSocket webSocket, string chargepointName)
         {
             _logger.LogDebug($"Receiving payload from charger {chargepointName}");
@@ -320,13 +248,6 @@ namespace ChargePointOperator
             return null;
         }
 
-        /// <summary>
-        /// This method sends payload to the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="payload"></param>
-        /// <param name="webSocket"></param>
-        /// <returns></returns>
         private async Task SendPayloadToChargerAsync(string chargepointName, object payload, WebSocket webSocket)
         {
             _logger.LogDebug($"Sending payload to charger {chargepointName}");
@@ -354,12 +275,6 @@ namespace ChargePointOperator
             charger.WebsocketBusy = false;
         }
 
-        /// <summary>
-        /// This method processes the received payload from the charger
-        /// </summary>
-        /// <param name="payloadString"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private JArray ProcessPayload(string payloadString, string chargepointName)
         {
             _logger.LogDebug($"Processing payload for charger {chargepointName}");
@@ -384,14 +299,6 @@ namespace ChargePointOperator
             return null;
         }
 
-        /// <summary>
-        /// This method validates payload received from the charger against the COPP schema.
-        /// Remarks : Free version allows verification of first 1000 words alone.
-        /// </summary>
-        /// <param name="payload"></param>
-        /// <param name="action"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private JsonValidationResponse JsonValidation(JObject payload, string action, string chargepointName)
         {
             _logger.LogDebug($"Entering Jsonvalidation for {chargepointName}");
@@ -441,12 +348,6 @@ namespace ChargePointOperator
             return response;
         }
 
-        /// <summary>
-        /// This method processes request payload received from the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="requestPayload"></param>
-        /// <returns>JArray of responsePayload or ErrorPayload</returns>
         private async Task<JArray> ProcessRequestPayloadAsync(string chargepointName, RequestPayload requestPayload)
         {
             _logger.LogDebug($"Processing requestPayload for charger {chargepointName}");
@@ -584,12 +485,6 @@ namespace ChargePointOperator
             return null;
         }
 
-        /// <summary>
-        /// This method processes the response payload from the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="responsePayload"></param>
-        /// <returns></returns>
         private async Task ProcessResponsePayloadAsync(string chargepointName, ResponsePayload responsePayload)
         {
             _logger.LogDebug($"Processing responsePayload for charger {chargepointName}");
@@ -599,13 +494,6 @@ namespace ChargePointOperator
             _logger.LogDebug($"Exiting Process response payload for {chargepointName}");
         }
 
-
-        /// <summary>
-        /// This method processes error payload from the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="errorPayload"></param>
-        /// <returns></returns>
         private async Task ProcessErrorPayloadAsync(string chargepointName, ErrorPayload errorPayload)
         {
             //Placeholder to process error payloads from charger for CentralSystem initiated commands
@@ -613,13 +501,6 @@ namespace ChargePointOperator
 
             _logger.LogDebug($"Exiting Process error payload for {chargepointName}");
         }
-
-        /// <summary>
-        /// This method removes connection from the activecharger dictionary
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="webSocket"></param>
-        /// <returns></returns>
 
         private async Task RemoveConnectionsAsync(string chargepointName, WebSocket webSocket)
         {
@@ -642,11 +523,6 @@ namespace ChargePointOperator
             }
         }
 
-        /// <summary>
-        /// This method gets the error payload for the given non correct request payload
-        /// </summary>
-        /// <param name="response"></param>
-        /// <param name="errorPayload"></param>
         private void GetErrorPayload(JsonValidationResponse response, ErrorPayload errorPayload)
         {
             if (response.Errors != null)
@@ -686,12 +562,6 @@ namespace ChargePointOperator
 
         }
 
-        /// <summary>
-        /// This method receives payload ; checks the messageTypeId and calls the appropriate processing method
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="webSocket"></param>
-        /// <returns></returns>
         private async Task HandlePayloadsAsync(string chargepointName, WebSocket webSocket)
         {
             _logger.LogDebug($"Entering HandlePayloads method for {chargepointName}");
@@ -752,14 +622,6 @@ namespace ChargePointOperator
             _logger.LogDebug($"Exiting HandlePayloads method for {chargepointName}");
         }
 
-#endregion
-
-        /// <summary>
-        /// This method logs the payload in case LogURL appsetting is set
-        /// </summary>
-        /// <param name="logPayload"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private async Task LogPayloads(LogPayload logPayload, string chargepointName)
         {
             //In case LogURL is not provided

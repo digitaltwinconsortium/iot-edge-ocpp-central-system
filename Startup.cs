@@ -1,3 +1,8 @@
+/*
+Copyright 2020 Cognizant
+Copyright 2021 Microsoft Corporation
+*/
+
 using ChargePointOperator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
