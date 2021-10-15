@@ -1,6 +1,5 @@
 ﻿using OCPP16;
 using System;
-using System.Diagnostics;
 
 namespace OCPPCentralStation.Controllers
 {
@@ -13,12 +12,12 @@ namespace OCPPCentralStation.Controllers
                 expiryDateSpecified = false,
                 status = AuthorizationStatus.Accepted
             };
+
             return new AuthorizeResponse(info);
         }
 
         public BootNotificationResponse BootNotification(BootNotificationRequest request)
         {
-            Debug.WriteLine("Identity: " + request.chargeBoxIdentity + " point#: " + request.chargePointSerialNumber);
             return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
         }
 
