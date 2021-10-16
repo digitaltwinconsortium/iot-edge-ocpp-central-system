@@ -42,7 +42,7 @@ namespace ProtocolGateway
             }
         }
 
-        public async Task SendTelemetryAsync(IoTCentralTelemetry telemetry)
+        public async Task SendTelemetryAsync(EVChargingStation telemetry)
         {
             try
             {

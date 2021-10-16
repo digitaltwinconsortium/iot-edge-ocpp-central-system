@@ -10,7 +10,7 @@ namespace ProtocolGateway
 {
     public interface ICloudGatewayClient
     {
-        Task SendTelemetryAsync(IoTCentralTelemetry telemetry);
+        Task SendTelemetryAsync(EVChargingStation telemetry);
 
         Task CloseAsync();
     }

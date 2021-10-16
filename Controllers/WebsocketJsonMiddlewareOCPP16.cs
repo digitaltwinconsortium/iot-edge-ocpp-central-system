@@ -38,7 +38,7 @@ namespace ChargePointOperator
         private static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
         private ICloudGatewayClient _gatewayClient;
         private string _logURL;
-        private IoTCentralTelemetry _telemetry = new IoTCentralTelemetry();
+        private EVChargingStation _telemetry = new EVChargingStation();
 
         public WebsocketJsonMiddlewareOCPP16(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
         {

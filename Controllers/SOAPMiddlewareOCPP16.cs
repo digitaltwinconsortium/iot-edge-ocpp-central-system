@@ -40,7 +40,7 @@ namespace OCPPCentralStation.Controllers
 
         public MeterValuesResponse MeterValues(MeterValuesRequest request)
         {
-            Console.WriteLine("Meter values for transaction " + request.transactionId + " on chargepoint " + request.chargeBoxIdentity + ":");
+            Console.WriteLine("Meter values for connector ID " + request.connectorId + " on chargepoint " + request.chargeBoxIdentity + ":");
 
             foreach (MeterValue meterValue in request.meterValue)
             {
