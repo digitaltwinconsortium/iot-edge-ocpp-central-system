@@ -35,15 +35,15 @@ namespace OCPPCentralStation
             services.AddSoapCore();
             services.AddControllers();
 
-            //services.AddHsts(options =>
-            //{
-            //    options.Preload = true;
-            //    options.IncludeSubDomains = true;
-            //    options.MaxAge = TimeSpan.FromDays(365);
-            //});
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
+            });
 
             //Injecting the Protocol gateway client
-            services.AddSingleton<ICloudGatewayClient>(new IoTHubClient(Configuration));
+            services.AddSingleton<ICloudGatewayClient>(new IoTCentralClient());
             services.AddSingleton<I_OCPP_CentralSystemService_15>(new SOAPMiddlewareOCPP15());
             services.AddSingleton<I_OCPP_CentralSystemService_16>(new SOAPMiddlewareOCPP16());
         }
@@ -56,7 +56,7 @@ namespace OCPPCentralStation
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHsts();
+            app.UseHsts();
 
             app.UseRouting();
 

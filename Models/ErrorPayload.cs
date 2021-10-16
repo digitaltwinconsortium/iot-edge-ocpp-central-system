@@ -12,7 +12,7 @@ namespace  ProtocolGateway.Models
         public string ErrorCode { get; set; }
 
         public string ErrorDescription { get; set; }
-        
+
         public new JArray WrappedPayload => new JArray() { MessageTypeId, UniqueId, ErrorCode, ErrorDescription, Payload };
 
         public ErrorPayload(string uniqueId)

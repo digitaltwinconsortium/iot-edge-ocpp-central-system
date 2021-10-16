@@ -24,6 +24,7 @@ using ProtocolGateway.Models;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using OCPP16;
+using OCPPCentralStation.schemas.dtdl;
 
 namespace ChargePointOperator
 {
@@ -31,19 +32,19 @@ namespace ChargePointOperator
     {
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
-        private readonly Logger _logger;
+        private readonly Logger _logger = new Logger();
 
         private List<string> knownChargers = new List<string>();
-        public static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
+        private static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
         private ICloudGatewayClient _gatewayClient;
         private string _logURL;
+        private IoTCentralTelemetry _telemetry = new IoTCentralTelemetry();
 
         public WebsocketJsonMiddlewareOCPP16(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
         {
             _next = next;
             _configuration = configuration;
             _logURL = _configuration["LogURL"];
-            _logger = new Logger();
             _gatewayClient = gatewayClient;
         }
 
@@ -73,7 +74,7 @@ namespace ChargePointOperator
                 httpContext.Response.StatusCode=StatusCodes.Status500InternalServerError;
                 await httpContext.Response.WriteAsync("Something went wrong!!. Please check with the Central system admin");
             }
-   
+
             _logger.LogDebug("Request finished.");
         }
 
@@ -367,14 +368,12 @@ namespace ChargePointOperator
 
                     object responsePayload = null;
                     string url = string.Empty;
+                    _telemetry.ID = chargepointName;
 
                     //switching based on OCPP action name
                     switch (action)
                     {
-
                         case "BootNotification":
-
-                            await _gatewayClient.SendTelemetryAsync(requestPayload, chargepointName);
 
                             BootNotificationResponse bootNotificationResponse = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, bootNotificationResponse);
@@ -382,22 +381,17 @@ namespace ChargePointOperator
 
                         case "Authorize":
 
-                            await _gatewayClient.SendTransactionMessageAsync(requestPayload, chargepointName);
                             break;
 
                         case "StartTransaction":
 
-                            await _gatewayClient.SendTransactionMessageAsync(requestPayload, chargepointName);
                             break;
 
                         case "StopTransaction":
 
-                            await _gatewayClient.SendTransactionMessageAsync(requestPayload, chargepointName);
                             break;
 
                         case "Heartbeat":
-
-                            await _gatewayClient.SendTelemetryAsync(requestPayload, chargepointName);
 
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
                             break;
@@ -413,7 +407,7 @@ namespace ChargePointOperator
                                 {
                                     if (Regex.IsMatch(j.unit.ToString(), @"^(W|Wh|kWh|kW)$"))
                                     {
-                                        await _gatewayClient.SendTelemetryAsync(j,chargepointName);
+                                        await _gatewayClient.SendTelemetryAsync(_telemetry);
                                     }
                                 }
                             }
@@ -424,23 +418,18 @@ namespace ChargePointOperator
 
                             StatusNotificationRequest statusNotification = requestPayload.Payload.ToObject<StatusNotificationRequest>();
                             responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
-                            
-                            await _gatewayClient.SendTelemetryAsync(statusNotification, chargepointName);
                             break;
 
                         case "DataTransfer":
 
-                            //<Placeholder>
                             break;
 
                         case "DiagnosticsStatusNotification":
 
-                            //<Placeholder>
                             break;
 
                         case "FirmwareStatusNotification":
 
-                            //<Placeholder>
                             break;
 
                         default:
@@ -448,6 +437,8 @@ namespace ChargePointOperator
                             responsePayload = new ErrorPayload(requestPayload.UniqueId, StringConstants.NotImplemented);
                             break;
                     }
+
+                    await _gatewayClient.SendTelemetryAsync(_telemetry).ConfigureAwait(false);
 
                     if (responsePayload != null)
                     {

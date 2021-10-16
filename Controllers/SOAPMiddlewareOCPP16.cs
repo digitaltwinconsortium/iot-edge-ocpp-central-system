@@ -1,4 +1,8 @@
-﻿using OCPP16;
+﻿/*
+Copyright 2021 Microsoft Corporation
+*/
+
+using OCPP16;
 using System;
 using System.Collections.Generic;
 

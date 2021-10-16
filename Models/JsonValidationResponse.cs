@@ -9,7 +9,7 @@ using Newtonsoft.Json.Schema;
 namespace ChargePointOperator.Models
 {
     public class JsonValidationResponse
-        {
+    {
         public bool Valid { get; set; }
 
         public List<ValidationError> Errors { get; set; }

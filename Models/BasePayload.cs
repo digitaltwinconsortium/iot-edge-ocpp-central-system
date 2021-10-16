@@ -12,9 +12,9 @@ namespace ProtocolGateway.Models
         public int MessageTypeId { get; set; }
 
         public string UniqueId { get; set; }
-        
+
         public JObject Payload { get; set; }
-        
+
         public JArray WrappedPayload { get; set; }
     }
 }
