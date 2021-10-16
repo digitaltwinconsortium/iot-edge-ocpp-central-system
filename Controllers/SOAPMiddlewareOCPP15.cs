@@ -3,6 +3,7 @@ Copyright 2021 Microsoft Corporation
 */
 
 using OCPP15;
+using ProtocolGateway;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,12 @@ namespace OCPPCentralStation.Controllers
     {
         private List<int> _currentTransactions = new List<int>();
         private int _transactionNumber = 0;
+        private ICloudGatewayClient _gatewayClient;
+
+        public SOAPMiddlewareOCPP15(ICloudGatewayClient gatewayClient)
+        {
+            _gatewayClient = gatewayClient;
+        }
 
         public AuthorizeResponse Authorize(AuthorizeRequest request)
         {
@@ -28,7 +35,9 @@ namespace OCPPCentralStation.Controllers
 
         public BootNotificationResponse BootNotification(BootNotificationRequest request)
         {
-            Console.WriteLine("Chargepoint with identity: " + request.chargeBoxIdentity + " booted! Chargepoint#: " + request.chargePointSerialNumber);
+            Console.WriteLine("Chargepoint with identity: " + request.chargeBoxIdentity + " booted!");
+            _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
+            _gatewayClient.Telemetry.Status = ChargePointStatus.Available.ToString();
 
             return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
         }
@@ -89,6 +98,8 @@ namespace OCPPCentralStation.Controllers
         public StatusNotificationResponse StatusNotification(StatusNotificationRequest request)
         {
             Console.WriteLine("Chargepoint " + request.chargeBoxIdentity + " and connector " + request.connectorId + " status#: " + request.status.ToString());
+            _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
+            _gatewayClient.Telemetry.Status = request.status.ToString();
 
             return new StatusNotificationResponse();
         }

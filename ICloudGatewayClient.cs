@@ -9,6 +9,6 @@ namespace ProtocolGateway
 {
     public interface ICloudGatewayClient
     {
-        public EVChargingStation Telemetry { set; }
+        public EVChargingStation Telemetry { get; set; }
     }
 }

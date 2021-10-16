@@ -48,10 +48,6 @@ namespace ChargePointOperator
             _gatewayClient = gatewayClient;
         }
 
-        public WebsocketJsonMiddlewareOCPP16()
-        {
-        }
-
         public async Task Invoke(HttpContext httpContext)
         {
             try

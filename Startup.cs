@@ -43,9 +43,10 @@ namespace OCPPCentralStation
             });
 
             // Injecting the Protocol gateway client
-            services.AddSingleton<ICloudGatewayClient>(new IoTCentralClient());
-            services.AddSingleton<I_OCPP_CentralSystemService_15>(new SOAPMiddlewareOCPP15());
-            services.AddSingleton<I_OCPP_CentralSystemService_16>(new SOAPMiddlewareOCPP16());
+            IoTCentralClient client = new IoTCentralClient();
+            services.AddSingleton<ICloudGatewayClient>(client);
+            services.AddSingleton<I_OCPP_CentralSystemService_15>(new SOAPMiddlewareOCPP15(client));
+            services.AddSingleton<I_OCPP_CentralSystemService_16>(new SOAPMiddlewareOCPP16(client));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
