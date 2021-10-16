@@ -407,7 +407,6 @@ namespace ChargePointOperator
                                 {
                                     if (Regex.IsMatch(j.unit.ToString(), @"^(W|Wh|kWh|kW)$"))
                                     {
-                                        await _gatewayClient.SendTelemetryAsync(_telemetry);
                                     }
                                 }
                             }
@@ -437,8 +436,6 @@ namespace ChargePointOperator
                             responsePayload = new ErrorPayload(requestPayload.UniqueId, StringConstants.NotImplemented);
                             break;
                     }
-
-                    await _gatewayClient.SendTelemetryAsync(_telemetry).ConfigureAwait(false);
 
                     if (responsePayload != null)
                     {

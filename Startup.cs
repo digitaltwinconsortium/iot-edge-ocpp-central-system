@@ -42,7 +42,7 @@ namespace OCPPCentralStation
                 options.MaxAge = TimeSpan.FromDays(365);
             });
 
-            //Injecting the Protocol gateway client
+            // Injecting the Protocol gateway client
             services.AddSingleton<ICloudGatewayClient>(new IoTCentralClient());
             services.AddSingleton<I_OCPP_CentralSystemService_15>(new SOAPMiddlewareOCPP15());
             services.AddSingleton<I_OCPP_CentralSystemService_16>(new SOAPMiddlewareOCPP16());
@@ -78,11 +78,9 @@ namespace OCPPCentralStation
                 await next();
             });
 
-
             var webSocketOptions = new WebSocketOptions
             {
                 KeepAliveInterval = TimeSpan.FromSeconds(1)
-
             };
             app.UseWebSockets(webSocketOptions);
             app.UseMiddleware<WebsocketJsonMiddlewareOCPP16>();
@@ -90,9 +88,13 @@ namespace OCPPCentralStation
             app.Run(async (context) =>
             {
                 if (context.Request.Path.Value == "/")
+                {
                     await context.Response.WriteAsync("OCPP Central System running.");
+                }
                 else
+                {
                     await context.Response.WriteAsync("Invalid Request");
+                }
             });
         }
     }
