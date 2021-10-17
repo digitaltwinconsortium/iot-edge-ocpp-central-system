@@ -18,7 +18,7 @@ namespace OCPPCentralSystem
         private Logger _logger = new Logger();
         private Timer _trigger;
 
-        public OCPPChargePoint Telemetry { get; set; }
+        public OCPPChargePoint ChargePoint { get; set; }
 
         public IoTCentralClient()
         {
@@ -31,7 +31,7 @@ namespace OCPPCentralSystem
                 _logger.LogError("GatewayClient constructor", ex);
             }
 
-            Telemetry = new OCPPChargePoint();
+            ChargePoint = new OCPPChargePoint();
           
             _trigger = new Timer(new TimerCallback(SendTelemetryAsync));
             int interval = 15000; // default to 15 seconds
@@ -39,7 +39,7 @@ namespace OCPPCentralSystem
             {
                 interval = int.Parse(Environment.GetEnvironmentVariable("Publishing_Interval"));
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // do nothing
             }
@@ -53,14 +53,14 @@ namespace OCPPCentralSystem
             {
                 if (_client != null)
                 {
-                    Message message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Telemetry)));
+                    Message message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ChargePoint)));
                     await _client.SendEventAsync(message).ConfigureAwait(false);
-                    _logger.LogInformation($"Gateway Client : Sent telemetry for chargepoint {Telemetry.ID}");
+                    _logger.LogInformation($"Gateway Client : Sent telemetry for chargepoint {ChargePoint.ID}");
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(Telemetry.ID, "Gateway Client : SendTelemetryAsync ", e);
+                _logger.LogError(ChargePoint.ID, "Gateway Client : SendTelemetryAsync ", e);
             }
         }
     }

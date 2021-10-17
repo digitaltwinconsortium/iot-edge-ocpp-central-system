@@ -9,6 +9,6 @@ namespace OCPPCentralSystem
 {
     public interface ICloudGatewayClient
     {
-        public OCPPChargePoint Telemetry { get; set; }
+        public OCPPChargePoint ChargePoint { get; set; }
     }
 }

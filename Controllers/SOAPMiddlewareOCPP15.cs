@@ -37,8 +37,8 @@ namespace OCPPCentralSystem.Controllers
         {
             Console.WriteLine("Chargepoint with identity: " + request.chargeBoxIdentity + " booted!");
 
-            _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
-            _gatewayClient.Telemetry.Status = ChargePointStatus.Available.ToString();
+            _gatewayClient.ChargePoint.ID = request.chargeBoxIdentity;
+            _gatewayClient.ChargePoint.Status = ChargePointStatus.Available.ToString();
 
             return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.UtcNow, 60);
         }
@@ -54,9 +54,9 @@ namespace OCPPCentralSystem.Controllers
         {
             Console.WriteLine("Meter values for connector ID " + request.connectorId + " on chargepoint " + request.chargeBoxIdentity + ":");
 
-            if (!_gatewayClient.Telemetry.Connectors.ContainsKey(request.connectorId))
+            if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
             {
-                _gatewayClient.Telemetry.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
             }
 
             foreach (MeterValue meterValue in request.values)
@@ -76,12 +76,12 @@ namespace OCPPCentralSystem.Controllers
                         }
                         reading.Timestamp = meterValue.timestamp;
 
-                        _gatewayClient.Telemetry.Connectors[request.connectorId].MeterReadings.Add(reading);
+                        _gatewayClient.ChargePoint.Connectors[request.connectorId].MeterReadings.Add(reading);
 
                         // only keep the last 10 meter readings
-                        if (_gatewayClient.Telemetry.Connectors[request.connectorId].MeterReadings.Count > 10)
+                        if (_gatewayClient.ChargePoint.Connectors[request.connectorId].MeterReadings.Count > 10)
                         {
-                            _gatewayClient.Telemetry.Connectors[request.connectorId].MeterReadings.RemoveAt(0);
+                            _gatewayClient.ChargePoint.Connectors[request.connectorId].MeterReadings.RemoveAt(0);
                         }
                     }
                 }
@@ -94,9 +94,9 @@ namespace OCPPCentralSystem.Controllers
         {
             Console.WriteLine("Start transaction " + _transactionNumber.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " on connector " + request.connectorId + " with badge ID " + request.idTag + " and meter reading at start " + request.meterStart);
 
-            if (!_gatewayClient.Telemetry.Connectors.ContainsKey(request.connectorId))
+            if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
             {
-                _gatewayClient.Telemetry.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
             }
 
             _transactionNumber++;
@@ -108,18 +108,18 @@ namespace OCPPCentralSystem.Controllers
             };
 
             // only add if the transaction doesn't exist yet
-            if (!_gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.ContainsKey(_transactionNumber))
+            if (!_gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.ContainsKey(_transactionNumber))
             {
-                _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.TryAdd(_transactionNumber, transaction);
+                _gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.TryAdd(_transactionNumber, transaction);
             }
 
             // remove all transactions that have completed and are more than a day old
-            KeyValuePair<int, Transaction>[] transactionsArray = _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.ToArray();
+            KeyValuePair<int, Transaction>[] transactionsArray = _gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.ToArray();
             for (int i = 0; i < transactionsArray.Length; i++)
             {
                 if ((transactionsArray[i].Value.StopTime != DateTime.MinValue) && (transactionsArray[i].Value.StopTime < DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))))
                 {
-                    _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.TryRemove(transactionsArray[i].Key, out _);
+                    _gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.TryRemove(transactionsArray[i].Key, out _);
                 }
             }
 
@@ -137,14 +137,14 @@ namespace OCPPCentralSystem.Controllers
             Console.WriteLine("Stop transaction " + request.transactionId.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " with badge ID " + request.idTag + " and meter reading at stop " + request.meterStop);
 
             // find the transaction
-            for (int i = 0; i < _gatewayClient.Telemetry.Connectors.Count; i++)
+            for (int i = 0; i < _gatewayClient.ChargePoint.Connectors.Count; i++)
             {
-                for (int j = 0; j < _gatewayClient.Telemetry.Connectors[i].CurrentTransactions.Count; j++)
+                for (int j = 0; j < _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions.Count; j++)
                 {
-                    if (_gatewayClient.Telemetry.Connectors[i].CurrentTransactions[j].ID == request.transactionId)
+                    if (_gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].ID == request.transactionId)
                     {
-                        _gatewayClient.Telemetry.Connectors[i].CurrentTransactions[j].MeterValueFinish = request.meterStop;
-                        _gatewayClient.Telemetry.Connectors[i].CurrentTransactions[j].StopTime = request.timestamp;
+                        _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].MeterValueFinish = request.meterStop;
+                        _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].StopTime = request.timestamp;
                         break;
                     }
                 }
@@ -163,8 +163,8 @@ namespace OCPPCentralSystem.Controllers
         {
             Console.WriteLine("Chargepoint " + request.chargeBoxIdentity + " and connector " + request.connectorId + " status#: " + request.status.ToString());
 
-            _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
-            _gatewayClient.Telemetry.Status = request.status.ToString();
+            _gatewayClient.ChargePoint.ID = request.chargeBoxIdentity;
+            _gatewayClient.ChargePoint.Status = request.status.ToString();
 
             return new StatusNotificationResponse();
         }
