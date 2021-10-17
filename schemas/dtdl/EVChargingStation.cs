@@ -49,7 +49,7 @@ namespace OCPPCentralStation.schemas.dtdl
             // init data
             MeterValue = -1;
             MeterValueUnit = "Wh";
-            Timestamp = DateTime.Now;
+            Timestamp = DateTime.UtcNow;
         }
 
         public int MeterValue { get; set; }
@@ -66,7 +66,7 @@ namespace OCPPCentralStation.schemas.dtdl
             // init data
             ID = id;
             BadgeID = string.Empty;
-            StartTime = DateTime.Now;
+            StartTime = DateTime.UtcNow;
             StopTime = DateTime.MinValue;
             MeterValueStart = -1;
             MeterValueFinish = -1;

@@ -23,6 +23,8 @@ namespace OCPPCentralStation.Controllers
         public AuthorizeResponse Authorize(AuthorizeRequest request)
         {
             Console.WriteLine("Authorization requested on chargepoint " + request.chargeBoxIdentity + "  and badge ID " + request.idTag);
+
+            // always authorize any badge for now
             IdTagInfo info = new IdTagInfo
             {
                 expiryDateSpecified = false,
@@ -38,14 +40,14 @@ namespace OCPPCentralStation.Controllers
             _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
             _gatewayClient.Telemetry.Status = ChargePointStatus.Available.ToString();
 
-            return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
+            return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.UtcNow, 60);
         }
 
         public HeartbeatResponse Heartbeat(HeartbeatRequest request)
         {
             Console.WriteLine("Heartbeat received from: " + request.chargeBoxIdentity);
 
-            return new HeartbeatResponse(DateTime.Now);
+            return new HeartbeatResponse(DateTime.UtcNow);
         }
 
         public MeterValuesResponse MeterValues(MeterValuesRequest request)
@@ -56,6 +58,7 @@ namespace OCPPCentralStation.Controllers
             {
                 _gatewayClient.Telemetry.Connectors.Add(request.connectorId, new Connector(request.connectorId));
             }
+
             foreach (MeterValue meterValue in request.meterValue)
             {
                 foreach (SampledValue sampledValue in meterValue.sampledValue)
@@ -106,7 +109,7 @@ namespace OCPPCentralStation.Controllers
             KeyValuePair<int, Transaction>[] transactionsArray = _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.ToArray();
             for (int i = 0; i < transactionsArray.Length; i++)
             {
-                if ((transactionsArray[i].Value.StopTime != DateTime.MinValue) && (transactionsArray[i].Value.StopTime < DateTime.Now.Subtract(TimeSpan.FromDays(1))))
+                if ((transactionsArray[i].Value.StopTime != DateTime.MinValue) && (transactionsArray[i].Value.StopTime < DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))))
                 {
                     _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.TryRemove(transactionsArray[i].Key, out _);
                 }
@@ -137,12 +140,12 @@ namespace OCPPCentralStation.Controllers
                     }
                 }
             }
+
             IdTagInfo info = new IdTagInfo
             {
                 expiryDateSpecified = false,
                 status = AuthorizationStatus.Accepted
             };
-
 
             return new StopTransactionResponse(info);
         }
@@ -150,6 +153,7 @@ namespace OCPPCentralStation.Controllers
         public StatusNotificationResponse StatusNotification(StatusNotificationRequest request)
         {
             Console.WriteLine("Chargepoint " + request.chargeBoxIdentity + " and connector " + request.connectorId + " status#: " + request.status.ToString());
+
             _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
             _gatewayClient.Telemetry.Status = request.status.ToString();
 
@@ -158,17 +162,17 @@ namespace OCPPCentralStation.Controllers
 
         public DataTransferResponse DataTransfer(DataTransferRequest request)
         {
-            throw new NotImplementedException();
+            return new DataTransferResponse(DataTransferStatus.Rejected, string.Empty);
         }
 
         public DiagnosticsStatusNotificationResponse DiagnosticsStatusNotification(DiagnosticsStatusNotificationRequest request)
         {
-            throw new NotImplementedException();
+            return new DiagnosticsStatusNotificationResponse();
         }
 
         public FirmwareStatusNotificationResponse FirmwareStatusNotification(FirmwareStatusNotificationRequest request)
         {
-            throw new NotImplementedException();
+            return new FirmwareStatusNotificationResponse();
         }
     }
 }

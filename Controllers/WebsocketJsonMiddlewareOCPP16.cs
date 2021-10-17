@@ -37,6 +37,7 @@ namespace ChargePointOperator
         private List<string> knownChargers = new List<string>();
         private static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
         private ICloudGatewayClient _gatewayClient;
+        private int _transactionNumber = 0;
         private string _logURL;
         private EVChargingStation _telemetry = new EVChargingStation();
 
@@ -369,68 +370,191 @@ namespace ChargePointOperator
                     //switching based on OCPP action name
                     switch (action)
                     {
-                        case "BootNotification":
-
-                            BootNotificationResponse bootNotificationResponse = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.Now, 60);
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, bootNotificationResponse);
-                            break;
-
                         case "Authorize":
-
-                            break;
-
-                        case "StartTransaction":
-
-                            break;
-
-                        case "StopTransaction":
-
-                            break;
-
-                        case "Heartbeat":
-
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
-                            break;
-
-                        case "MeterValues":
-
-                            MeterValuesRequest meterValues = requestPayload.Payload.ToObject<MeterValuesRequest>();
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
-
-                            foreach (var i in meterValues.meterValue)
                             {
-                                foreach (var j in i.sampledValue)
+                                AuthorizeRequest request = requestPayload.Payload.ToObject<AuthorizeRequest>();
+
+                                Console.WriteLine("Authorization requested on chargepoint " + request.chargeBoxIdentity + "  and badge ID " + request.idTag);
+
+                                // always authorize any badge for now
+                                IdTagInfo info = new IdTagInfo
                                 {
-                                    if (Regex.IsMatch(j.unit.ToString(), @"^(W|Wh|kWh|kW)$"))
+                                    expiryDateSpecified = false,
+                                    status = AuthorizationStatus.Accepted
+                                };
+
+                                AuthorizeResponse response = new AuthorizeResponse(info);
+                                responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                                break;
+                            }
+                        case "BootNotification":
+                            {
+                                BootNotificationRequest request = requestPayload.Payload.ToObject<BootNotificationRequest>();
+
+                                Console.WriteLine("Chargepoint with identity: " + request.chargeBoxIdentity + " booted!");
+
+                                _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
+                                _gatewayClient.Telemetry.Status = ChargePointStatus.Available.ToString();
+
+                                BootNotificationResponse response = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.UtcNow, 60);
+                                responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                                break;
+                            }
+                        case "Heartbeat":
+                            {
+                                HeartbeatRequest request = requestPayload.Payload.ToObject<HeartbeatRequest>();
+
+                                Console.WriteLine("Heartbeat received from: " + request.chargeBoxIdentity);
+
+                                HeartbeatResponse response = new HeartbeatResponse(DateTime.UtcNow);
+                                responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                                break;
+                            }
+                        case "MeterValues":
+                            {
+                                MeterValuesRequest request = requestPayload.Payload.ToObject<MeterValuesRequest>();
+
+                                Console.WriteLine("Meter values for connector ID " + request.connectorId + " on chargepoint " + request.chargeBoxIdentity + ":");
+
+                                if (!_gatewayClient.Telemetry.Connectors.ContainsKey(request.connectorId))
+                                {
+                                    _gatewayClient.Telemetry.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                                }
+
+                                foreach (MeterValue meterValue in request.meterValue)
+                                {
+                                    foreach (SampledValue sampledValue in meterValue.sampledValue)
                                     {
+                                        Console.WriteLine("Value: " + sampledValue.value + " " + sampledValue.unit.ToString());
+                                        int prasedInt = 0;
+                                        if (int.TryParse(sampledValue.value, out prasedInt))
+                                        {
+                                            MeterReading reading = new MeterReading();
+                                            reading.MeterValue = int.Parse(sampledValue.value);
+                                            if (sampledValue.unitSpecified)
+                                            {
+                                                reading.MeterValueUnit = sampledValue.unit.ToString();
+                                            }
+                                            reading.Timestamp = meterValue.timestamp;
+                                            _gatewayClient.Telemetry.Connectors[request.connectorId].MeterReadings.Add(reading);
+                                            if (_gatewayClient.Telemetry.Connectors[request.connectorId].MeterReadings.Count > 10)
+                                            {
+                                                _gatewayClient.Telemetry.Connectors[request.connectorId].MeterReadings.RemoveAt(0);
+                                            }
+                                        }
                                     }
                                 }
+
+                                MeterValuesResponse response = new MeterValuesResponse();
+                                responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                                break;
                             }
+                        case "StartTransaction":
+                            {
+                                StartTransactionRequest request = requestPayload.Payload.ToObject<StartTransactionRequest>();
 
-                            break;
+                                Console.WriteLine("Start transaction " + _transactionNumber.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " on connector " + request.connectorId + " with badge ID " + request.idTag + " and meter reading at start " + request.meterStart);
+                                if (!_gatewayClient.Telemetry.Connectors.ContainsKey(request.connectorId))
+                                {
+                                    _gatewayClient.Telemetry.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                                }
+                                _transactionNumber++;
+                                Transaction transaction = new Transaction(_transactionNumber)
+                                {
+                                    BadgeID = request.idTag,
+                                    StartTime = request.timestamp,
+                                    MeterValueStart = request.meterStart
+                                };
 
+                                if (!_gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.ContainsKey(_transactionNumber))
+                                {
+                                    _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.TryAdd(_transactionNumber, transaction);
+                                }
+
+                                KeyValuePair<int, Transaction>[] transactionsArray = _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.ToArray();
+                                for (int i = 0; i < transactionsArray.Length; i++)
+                                {
+                                    if ((transactionsArray[i].Value.StopTime != DateTime.MinValue) && (transactionsArray[i].Value.StopTime < DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))))
+                                    {
+                                        _gatewayClient.Telemetry.Connectors[request.connectorId].CurrentTransactions.TryRemove(transactionsArray[i].Key, out _);
+                                    }
+                                }
+
+                                IdTagInfo info = new IdTagInfo
+                                {
+                                    expiryDateSpecified = false,
+                                    status = AuthorizationStatus.Accepted
+                                };
+
+                                StartTransactionResponse response = new StartTransactionResponse(_transactionNumber, info);
+                                responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                                break;
+                            }
+                        case "StopTransaction":
+                            {
+                                StopTransactionRequest request = requestPayload.Payload.ToObject<StopTransactionRequest>();
+
+                                Console.WriteLine("Stop transaction " + request.transactionId.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " with badge ID " + request.idTag + " and meter reading at stop " + request.meterStop);
+
+                                for (int i = 0; i < _gatewayClient.Telemetry.Connectors.Count; i++)
+                                {
+                                    for (int j = 0; j < _gatewayClient.Telemetry.Connectors[i].CurrentTransactions.Count; j++)
+                                    {
+                                        if (_gatewayClient.Telemetry.Connectors[i].CurrentTransactions[j].ID == request.transactionId)
+                                        {
+                                            _gatewayClient.Telemetry.Connectors[i].CurrentTransactions[j].MeterValueFinish = request.meterStop;
+                                            _gatewayClient.Telemetry.Connectors[i].CurrentTransactions[j].StopTime = request.timestamp;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                IdTagInfo info = new IdTagInfo
+                                {
+                                    expiryDateSpecified = false,
+                                    status = AuthorizationStatus.Accepted
+                                };
+
+                                StopTransactionResponse response = new StopTransactionResponse(info);
+                                responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                                break;
+                            }
                         case "StatusNotification":
+                        { 
+                            StatusNotificationRequest request = requestPayload.Payload.ToObject<StatusNotificationRequest>();
 
-                            StatusNotificationRequest statusNotification = requestPayload.Payload.ToObject<StatusNotificationRequest>();
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
+                            Console.WriteLine("Chargepoint " + request.chargeBoxIdentity + " and connector " + request.connectorId + " status#: " + request.status.ToString());
+
+                            _gatewayClient.Telemetry.ID = request.chargeBoxIdentity;
+                            _gatewayClient.Telemetry.Status = request.status.ToString();
+
+                            StatusNotificationResponse response = new StatusNotificationResponse();
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         case "DataTransfer":
-
+                        {
+                            DataTransferResponse response = new DataTransferResponse(DataTransferStatus.Rejected, string.Empty);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         case "DiagnosticsStatusNotification":
-
+                        {
+                            DiagnosticsStatusNotificationResponse response = new DiagnosticsStatusNotificationResponse();
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         case "FirmwareStatusNotification":
-
+                        {
+                            FirmwareStatusNotificationResponse response = new FirmwareStatusNotificationResponse();
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         default:
-
+                        {
                             responsePayload = new ErrorPayload(requestPayload.UniqueId, StringConstants.NotImplemented);
                             break;
+                        }
                     }
 
                     if (responsePayload != null)
