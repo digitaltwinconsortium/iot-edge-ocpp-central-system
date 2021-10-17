@@ -5,12 +5,12 @@ Copyright 2021 Microsoft Corporation
 
 using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
-using OCPPCentralStation.schemas.dtdl;
+using OCPPCentralSystem.Schemas.DTDL;
 using System;
 using System.Text;
 using System.Threading;
 
-namespace ProtocolGateway
+namespace OCPPCentralSystem
 {
     public class IoTCentralClient : ICloudGatewayClient
     {
@@ -18,7 +18,7 @@ namespace ProtocolGateway
         private Logger _logger = new Logger();
         private Timer _trigger;
 
-        public EVChargingStation Telemetry { get; set; }
+        public OCPPChargePoint Telemetry { get; set; }
 
         public IoTCentralClient()
         {
@@ -31,7 +31,7 @@ namespace ProtocolGateway
                 _logger.LogError("GatewayClient constructor", ex);
             }
 
-            Telemetry = new EVChargingStation();
+            Telemetry = new OCPPChargePoint();
           
             _trigger = new Timer(new TimerCallback(SendTelemetryAsync));
             int interval = 15000; // default to 15 seconds

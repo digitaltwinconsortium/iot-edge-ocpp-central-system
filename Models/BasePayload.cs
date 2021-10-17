@@ -5,7 +5,7 @@ Copyright 2021 Microsoft Corporation
 
 using Newtonsoft.Json.Linq;
 
-namespace ProtocolGateway.Models
+namespace OCPPCentralSystem.Models
 {
     public class BasePayload
     {

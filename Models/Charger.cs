@@ -6,7 +6,7 @@ Copyright 2021 Microsoft Corporation
 using System.Net.WebSockets;
 using System.Collections.Generic;
 
-namespace ChargePointOperator.Models
+namespace OCPPCentralSystem.Models
 {
     public class Charger
     {

@@ -8,15 +8,15 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 COPY ["OCPPCentralStation.csproj", "."]
-RUN dotnet restore "./OCPPCentralStation.csproj"
+RUN dotnet restore "./OCPPCentralSystem.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "OCPPCentralStation.csproj" -c Release -o /app/build
+RUN dotnet build "OCPPCentralSystem.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "OCPPCentralStation.csproj" -c Release -o /app/publish
+RUN dotnet publish "OCPPCentralSystem.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "OCPPCentralStation.dll"]
+ENTRYPOINT ["dotnet", "OCPPCentralSystem.dll"]

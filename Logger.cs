@@ -5,7 +5,7 @@ Copyright 2021 Microsoft Corporation
 
 using System;
 
-namespace ProtocolGateway
+namespace OCPPCentralSystem
 {
     public class Logger
     {

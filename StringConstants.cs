@@ -3,7 +3,7 @@ Copyright 2020 Cognizant
 Copyright 2021 Microsoft Corporation
 */
 
-namespace ChargePointOperator.Models
+namespace OCPPCentralSystem.Models
 {
     public class StringConstants
     {

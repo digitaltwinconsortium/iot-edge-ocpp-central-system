@@ -3,30 +3,27 @@ Copyright 2020 Cognizant
 Copyright 2021 Microsoft Corporation
 */
 
-using ChargePointOperator.Models;
 using Microsoft.AspNetCore.Http;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Threading;
-using System;
-using System.Text;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json.Schema;
-using System.Text.RegularExpressions;
-using System.Net.Http;
-using System.Net;
+using OCPPCentralSystem.Models;
+using OCPPCentralSystem.Schemas.DTDL;
+using OCPPCentralSystem.Schemas.OCPP16;
+using System;
 using System.Collections.Concurrent;
-using ProtocolGateway;
-using ProtocolGateway.Models;
-using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.IO;
-using OCPP16;
-using OCPPCentralStation.schemas.dtdl;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace ChargePointOperator
+namespace OCPPCentralSystem.Controllers
 {
     public class WebsocketJsonMiddlewareOCPP16
     {
@@ -39,7 +36,7 @@ namespace ChargePointOperator
         private ICloudGatewayClient _gatewayClient;
         private int _transactionNumber = 0;
         private string _logURL;
-        private EVChargingStation _telemetry = new EVChargingStation();
+        private OCPPChargePoint _telemetry = new OCPPChargePoint();
 
         public WebsocketJsonMiddlewareOCPP16(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
         {

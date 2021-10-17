@@ -3,12 +3,12 @@ Copyright 2020 Cognizant
 Copyright 2021 Microsoft Corporation
 */
 
-using OCPPCentralStation.schemas.dtdl;
+using OCPPCentralSystem.Schemas.DTDL;
 
-namespace ProtocolGateway
+namespace OCPPCentralSystem
 {
     public interface ICloudGatewayClient
     {
-        public EVChargingStation Telemetry { get; set; }
+        public OCPPChargePoint Telemetry { get; set; }
     }
 }

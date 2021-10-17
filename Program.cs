@@ -6,7 +6,7 @@ Copyright 2021 Microsoft Corporation
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace OCPPCentralStation
+namespace OCPPCentralSystem
 {
     public class Program
     {

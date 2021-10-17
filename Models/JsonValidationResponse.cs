@@ -6,7 +6,7 @@ Copyright 2021 Microsoft Corporation
 using System.Collections.Generic;
 using Newtonsoft.Json.Schema;
 
-namespace ChargePointOperator.Models
+namespace OCPPCentralSystem.Models
 {
     public class JsonValidationResponse
     {

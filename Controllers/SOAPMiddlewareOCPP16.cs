@@ -2,13 +2,12 @@
 Copyright 2021 Microsoft Corporation
 */
 
-using OCPP16;
-using OCPPCentralStation.schemas.dtdl;
-using ProtocolGateway;
+using OCPPCentralSystem.Schemas.DTDL;
+using OCPPCentralSystem.Schemas.OCPP16;
 using System;
 using System.Collections.Generic;
 
-namespace OCPPCentralStation.Controllers
+namespace OCPPCentralSystem.Controllers
 {
     public class SOAPMiddlewareOCPP16 : I_OCPP_CentralSystemService_16
     {

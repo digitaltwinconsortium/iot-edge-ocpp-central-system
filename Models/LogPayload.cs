@@ -3,11 +3,9 @@ Copyright 2020 Cognizant
 Copyright 2021 Microsoft Corporation
 */
 
-using System;
 using Newtonsoft.Json;
-using ProtocolGateway.Models;
 
-namespace ChargePointOperator.Models
+namespace OCPPCentralSystem.Models
 {
     public class LogPayload
     {

@@ -3,22 +3,20 @@ Copyright 2020 Cognizant
 Copyright 2021 Microsoft Corporation
 */
 
-using ChargePointOperator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OCPP15;
-using OCPP16;
-using OCPPCentralStation.Controllers;
-using ProtocolGateway;
+using OCPPCentralSystem.Controllers;
+using OCPPCentralSystem.Schemas.OCPP15;
+using OCPPCentralSystem.Schemas.OCPP16;
 using SoapCore;
 using System;
 using System.ServiceModel.Channels;
 
-namespace OCPPCentralStation
+namespace OCPPCentralSystem
 {
     public class Startup
     {

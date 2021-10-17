@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OCPP15
+namespace OCPPCentralSystem.Schemas.OCPP15
 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(Namespace = "urn://Ocpp/Cs/2012/06/", ConfigurationName = "CentralSystemService")]
