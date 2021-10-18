@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
-COPY ["OCPPCentralStation.csproj", "."]
+COPY ["OCPPCentralSystem.csproj", "."]
 RUN dotnet restore "./OCPPCentralSystem.csproj"
 COPY . .
 WORKDIR "/src/."
