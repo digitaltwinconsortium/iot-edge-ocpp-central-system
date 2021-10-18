@@ -15,7 +15,6 @@ namespace OCPPCentralSystem
     public class IoTCentralClient : ICloudGatewayClient
     {
         private ModuleClient _client;
-        private Logger _logger = new Logger();
         private Timer _trigger;
 
         public OCPPChargePoint ChargePoint { get; set; }
@@ -28,7 +27,8 @@ namespace OCPPCentralSystem
             }
             catch (Exception ex)
             {
-                _logger.LogError("GatewayClient constructor", ex);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
             ChargePoint = new OCPPChargePoint();
@@ -56,12 +56,12 @@ namespace OCPPCentralSystem
                 if (_client != null)
                 {
                     await _client.SendEventAsync(new Message(Encoding.UTF8.GetBytes(serializedMessage))).ConfigureAwait(false);
-                    _logger.LogInformation($"Gateway Client : Sent telemetry for chargepoint {ChargePoint.ID}");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(ChargePoint.ID, "Gateway Client : SendTelemetryAsync ", e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
         }
     }

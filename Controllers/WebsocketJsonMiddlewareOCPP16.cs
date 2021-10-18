@@ -4,7 +4,6 @@ Copyright 2021 Microsoft Corporation
 */
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -16,8 +15,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -28,21 +25,16 @@ namespace OCPPCentralSystem.Controllers
     public class WebsocketJsonMiddlewareOCPP16
     {
         private readonly RequestDelegate _next;
-        private readonly IConfiguration _configuration;
-        private readonly Logger _logger = new Logger();
 
         private List<string> knownChargers = new List<string>();
         private static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
         private ICloudGatewayClient _gatewayClient;
         private int _transactionNumber = 0;
-        private string _logURL;
         private OCPPChargePoint _telemetry = new OCPPChargePoint();
 
-        public WebsocketJsonMiddlewareOCPP16(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
+        public WebsocketJsonMiddlewareOCPP16(RequestDelegate next, ICloudGatewayClient gatewayClient)
         {
             _next = next;
-            _configuration = configuration;
-            _logURL = _configuration["LogURL"];
             _gatewayClient = gatewayClient;
         }
 
@@ -50,8 +42,6 @@ namespace OCPPCentralSystem.Controllers
         {
             try
             {
-                _logger.LogInformation("Request starting");
-
                 if (httpContext.WebSockets.IsWebSocketRequest)
                 {
                     await HandleWebsockets(httpContext);
@@ -61,15 +51,14 @@ namespace OCPPCentralSystem.Controllers
                 // passed on to next middleware
                 await _next(httpContext);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(httpContext.Request.Path.Value.Split('/').LastOrDefault(),"Invoke",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
 
                 httpContext.Response.StatusCode=StatusCodes.Status500InternalServerError;
                 await httpContext.Response.WriteAsync("Something went wrong!!. Please check with the Central system admin");
             }
-
-            _logger.LogDebug("Request finished.");
         }
 
         private async Task<bool> CheckProtocolAsync(HttpContext httpContext, string chargepointName)
@@ -77,21 +66,23 @@ namespace OCPPCentralSystem.Controllers
             var errorMessage = string.Empty;
 
             var chargerProtocols = httpContext.WebSockets.WebSocketRequestedProtocols;
-            _logger.LogInformation($"Charger requested protocols : {chargerProtocols} for {chargepointName}");
-
-
             if (chargerProtocols.Count == 0)
+            {
                 errorMessage = StringConstants.NoProtocolHeaderMessage;
+            }
             else
             {
-
-                if (!chargerProtocols.Contains(StringConstants.RequiredProtocol)) //Allow only ocpp1.6
+                if (chargerProtocols.Contains(StringConstants.RequiredProtocol)) //Allow only ocpp1.6
+                {
                     errorMessage = StringConstants.SubProtocolNotSupportedMessage;
+                }
                 else
+                {
                     return true;
+                }
             }
 
-            _logger.LogInformation($"Protocol conflict for {chargepointName}");
+            Console.WriteLine($"Protocol conflict for {chargepointName}");
 
             //Websocket request with Protcols that are not supported are accepted and closed
             var socket = await httpContext.WebSockets.AcceptWebSocketAsync();
@@ -102,7 +93,6 @@ namespace OCPPCentralSystem.Controllers
 
         private async Task HandleWebsockets(HttpContext httpContext)
         {
-            _logger.LogDebug($"Entering HandleWebsockets method");
             string chargepointName = string.Empty;
             try
             {
@@ -130,7 +120,7 @@ namespace OCPPCentralSystem.Controllers
                 if (!activeCharger.ContainsKey(chargepointName))
                 {
                     activeCharger.TryAdd(chargepointName, new Charger(chargepointName, socket));
-                    _logger.LogInformation($"No. of active chargers : {activeCharger.Count}");
+                    Console.WriteLine($"No. of active chargers : {activeCharger.Count}");
                 }
                 else
                 {
@@ -140,40 +130,37 @@ namespace OCPPCentralSystem.Controllers
                         activeCharger[chargepointName].WebSocket = socket;
                         if (oldSocket != null)
                         {
-                            _logger.LogWarning($"New websocket request received for {chargepointName}");
+                            Console.WriteLine($"New websocket request received for {chargepointName}");
                             if (oldSocket != socket && oldSocket.State != WebSocketState.Closed)
                             {
-                                _logger.LogWarning($"Closing old websocket for {chargepointName}");
+                                Console.WriteLine($"Closing old websocket for {chargepointName}");
 
                                 await oldSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, StringConstants.ClientInitiatedNewWebsocketMessage, CancellationToken.None);
                             }
                         }
-                        _logger.LogWarning($"Websocket replaced successfully for {chargepointName}");
+                        Console.WriteLine($"Websocket replaced successfully for {chargepointName}");
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        _logger.LogError(chargepointName,"While closing old socket in HandleWebsockets",e);
+                        Console.WriteLine("Exception: " + ex.Message);
+                        Console.WriteLine(ex.StackTrace);
                     }
                 }
 
-
                 if (socket.State == WebSocketState.Open)
+                {
                     await HandleActiveConnection(socket, chargepointName);
-
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(chargepointName,"HandleWebsockets",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
-
-            _logger.LogDebug($"Exiting HandleWebsockets method for {chargepointName}");
-
         }
 
         private async Task HandleActiveConnection(WebSocket webSocket, string chargepointName)
         {
-            _logger.LogDebug($"Entering HandleActiveConnections method for {chargepointName}");
-            _logger.LogInformation($"Websocket connected for {chargepointName}");
             try
             {
                 if (webSocket.State == WebSocketState.Open)
@@ -183,17 +170,15 @@ namespace OCPPCentralSystem.Controllers
                     await RemoveConnectionsAsync(chargepointName, webSocket);
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(chargepointName,"HandleActiveConnections",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
-            _logger.LogDebug($"Exiting HandleActiveConnections method for {chargepointName}");
         }
 
         private async Task<string> ReceiveDataFromChargerAsync(WebSocket webSocket, string chargepointName)
         {
-            _logger.LogDebug($"Receiving payload from charger {chargepointName}");
-
             try
             {
                 ArraySegment<byte> data = new ArraySegment<byte>(new byte[1024]);
@@ -222,30 +207,30 @@ namespace OCPPCentralSystem.Controllers
 
                 } while (!result.EndOfMessage);
 
-                _logger.LogTrace($"Data from charger {chargepointName} : {payloadString}");
                 return payloadString;
-
             }
             catch (WebSocketException websocex)
             {
                 if (webSocket != activeCharger[chargepointName].WebSocket)
-                    _logger.LogWarning($"WebsocketException occured in the old socket while receiving payload from charger {chargepointName}. Error : {websocex.Message}");
+                {
+                    Console.WriteLine($"WebsocketException occured in the old socket while receiving payload from charger {chargepointName}. Error : {websocex.Message}");
+                }
                 else
-                    _logger.LogError(chargepointName,"ReceiveDataFromChargerAsync",websocex);
+                {
+                    Console.WriteLine("Exception: " + websocex.Message);
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(chargepointName,"ReceiveDataFromChargerAsync",e);
-
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
-            _logger.LogDebug($"Exiting Receive method for charger {chargepointName}");
             return null;
         }
 
         private async Task SendPayloadToChargerAsync(string chargepointName, object payload, WebSocket webSocket)
         {
-            _logger.LogDebug($"Sending payload to charger {chargepointName}");
             var charger = activeCharger[chargepointName];
 
             try
@@ -255,16 +240,17 @@ namespace OCPPCentralSystem.Controllers
                 var settings = new JsonSerializerSettings { DateFormatString = StringConstants.DateTimeFormat, NullValueHandling = NullValueHandling.Ignore };
                 var serializedPayload = JsonConvert.SerializeObject(payload, settings);
 
-                _logger.LogTrace($"Serialized Payload : {serializedPayload} for {chargepointName}");
-
                 ArraySegment<byte> data = Encoding.UTF8.GetBytes(serializedPayload);
 
                 if (webSocket.State == WebSocketState.Open)
+                {
                     await webSocket.SendAsync(data, WebSocketMessageType.Text, true, CancellationToken.None);
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(chargepointName,"SendPayloadToCharger",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
             charger.WebsocketBusy = false;
@@ -272,58 +258,56 @@ namespace OCPPCentralSystem.Controllers
 
         private JArray ProcessPayload(string payloadString, string chargepointName)
         {
-            _logger.LogDebug($"Processing payload for charger {chargepointName}");
             try
             {
                 if (payloadString != null)
                 {
-                    _logger.LogTrace($"Input payload string : {payloadString}");
                     var basePayload = JsonConvert.DeserializeObject<JArray>(payloadString);
                     return basePayload;
-
                 }
                 else
-                    _logger.LogWarning($"Null payload received for {chargepointName}");
+                {
+                    Console.WriteLine($"Null payload received for {chargepointName}");
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(chargepointName,"ProcessPayload",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
-            _logger.LogDebug($"Exiting processpayload method for charger {chargepointName}");
             return null;
         }
 
         private JsonValidationResponse JsonValidation(JObject payload, string action, string chargepointName)
         {
-            _logger.LogDebug($"Entering Jsonvalidation for {chargepointName}");
-
             JsonValidationResponse response = new JsonValidationResponse { Valid = false };
 
             try
             {
-               if (action != null)
-               {
-                   _logger.LogInformation($"Validating payload for {chargepointName} for action {action}.");
-                   //Getting Schema FilePath
-                   string currentDirectory = Directory.GetCurrentDirectory();
-                   string filePath = Path.Combine(currentDirectory, "Schemas", $"{action}.json");
+                if (action != null)
+                {
+                    //Getting Schema FilePath
+                    string currentDirectory = Directory.GetCurrentDirectory();
+                    string filePath = Path.Combine(currentDirectory, "Schemas", $"{action}.json");
 
-                   //Parsing schema
-                   JObject content = JObject.Parse(File.ReadAllText(filePath));
-                   JSchema schema = JSchema.Parse(content.ToString());
-                   JToken json = JToken.Parse(payload.ToString()); // Parsing input payload
+                    //Parsing schema
+                    JObject content = JObject.Parse(File.ReadAllText(filePath));
+                    JSchema schema = JSchema.Parse(content.ToString());
+                    JToken json = JToken.Parse(payload.ToString()); // Parsing input payload
 
-                   // Validate json
-                   response = new JsonValidationResponse
-                   {
-                       Valid = json.IsValid(schema, out IList<ValidationError> errors),
-                       Errors = errors.ToList()
-                   };
+                    // Validate json
+                    response = new JsonValidationResponse
+                    {
+                        Valid = json.IsValid(schema, out IList<ValidationError> errors),
+                        Errors = errors.ToList()
+                    };
 
-               }
-               else
-                   _logger.LogError(chargepointName,"JsonValidation","Action is null");
+                }
+                else
+                {
+                    Console.WriteLine("JsonValidation: Action is null");
+                }
             }
             catch (FileNotFoundException)
             {
@@ -331,35 +315,29 @@ namespace OCPPCentralSystem.Controllers
             }
             catch (JsonReaderException jsre)
             {
-               _logger.LogError(chargepointName,"JsonValidation",jsre);
+                Console.WriteLine("Exception: " + jsre.Message);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-
-               _logger.LogError(chargepointName,"JsonValidation",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
-            _logger.LogDebug($"Exiting Jsonvalidation for {chargepointName}");
             return response;
         }
 
-        private async Task<JArray> ProcessRequestPayloadAsync(string chargepointName, RequestPayload requestPayload)
+        private Task<JArray> ProcessRequestPayloadAsync(string chargepointName, RequestPayload requestPayload)
         {
-            _logger.LogDebug($"Processing requestPayload for charger {chargepointName}");
             string action = string.Empty;
+
             try
             {
-
-                await LogPayloads(new LogPayload(requestPayload, chargepointName), chargepointName);
-
                 action = requestPayload.Action;
 
                 var isValidPayload = JsonValidation(requestPayload.Payload, action, chargepointName);
 
                 if (isValidPayload.Valid)
                 {
-                    _logger.LogInformation($"{action} request received for charger {chargepointName}");
-
                     object responsePayload = null;
                     string url = string.Empty;
                     _telemetry.ID = chargepointName;
@@ -414,7 +392,7 @@ namespace OCPPCentralSystem.Controllers
 
                             if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
                             {
-                                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                                _gatewayClient.ChargePoint.Connectors.TryAdd(request.connectorId, new Connector(request.connectorId));
                             }
 
                             foreach (MeterValue meterValue in request.meterValue)
@@ -452,7 +430,7 @@ namespace OCPPCentralSystem.Controllers
                             Console.WriteLine("Start transaction " + _transactionNumber.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " on connector " + request.connectorId + " with badge ID " + request.idTag + " and meter reading at start " + request.meterStart);
                             if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
                             {
-                                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                                _gatewayClient.ChargePoint.Connectors.TryAdd(request.connectorId, new Connector(request.connectorId));
                             }
                             _transactionNumber++;
                             Transaction transaction = new Transaction(_transactionNumber)
@@ -492,16 +470,15 @@ namespace OCPPCentralSystem.Controllers
 
                             Console.WriteLine("Stop transaction " + request.transactionId.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " with badge ID " + request.idTag + " and meter reading at stop " + request.meterStop);
 
-                            for (int i = 0; i < _gatewayClient.ChargePoint.Connectors.Count; i++)
+                            // find the transaction
+                            KeyValuePair<int, Connector>[] connectorArray = _gatewayClient.ChargePoint.Connectors.ToArray();
+                            for (int i = 0; i < connectorArray.Length; i++)
                             {
-                                for (int j = 0; j < _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions.Count; j++)
+                                if (_gatewayClient.ChargePoint.Connectors[connectorArray[i].Key].CurrentTransactions.ContainsKey(request.transactionId))
                                 {
-                                    if (_gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].ID == request.transactionId)
-                                    {
-                                        _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].MeterValueFinish = request.meterStop;
-                                        _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].StopTime = request.timestamp;
-                                        break;
-                                    }
+                                    _gatewayClient.ChargePoint.Connectors[connectorArray[i].Key].CurrentTransactions[request.transactionId].MeterValueFinish = request.meterStop;
+                                    _gatewayClient.ChargePoint.Connectors[connectorArray[i].Key].CurrentTransactions[request.transactionId].StopTime = request.timestamp;
+                                    break;
                                 }
                             }
 
@@ -523,7 +500,7 @@ namespace OCPPCentralSystem.Controllers
 
                             if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
                             {
-                                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                                _gatewayClient.ChargePoint.Connectors.TryAdd(request.connectorId, new Connector(request.connectorId));
                             }
 
                             _gatewayClient.ChargePoint.ID = request.chargeBoxIdentity;
@@ -563,14 +540,12 @@ namespace OCPPCentralSystem.Controllers
                         if (((BasePayload)responsePayload).MessageTypeId == 3)
                         {
                             ResponsePayload response = (ResponsePayload)responsePayload;
-                            await LogPayloads(new LogPayload(action, response, chargepointName), chargepointName);
-                            return response.WrappedPayload;
+                            return Task.FromResult(response.WrappedPayload);
                         }
                         else
                         {
                             ErrorPayload error = (ErrorPayload)responsePayload;
-                            await LogPayloads(new LogPayload(action, error, chargepointName), chargepointName);
-                            return error.WrappedPayload;
+                            return Task.FromResult(error.WrappedPayload);
                         }
                     }
 
@@ -579,55 +554,51 @@ namespace OCPPCentralSystem.Controllers
                 {
                     ErrorPayload errorPayload = new ErrorPayload(requestPayload.UniqueId);
                     GetErrorPayload(isValidPayload, errorPayload);
-
-                    await LogPayloads(new LogPayload(action,errorPayload, chargepointName), chargepointName);
-                    return errorPayload.WrappedPayload;
+                    return Task.FromResult(errorPayload.WrappedPayload);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(chargepointName,$"ProcessREquestPayload for action {action}",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
-            _logger.LogDebug($"Exiting Process request payload for {chargepointName}");
             return null;
         }
 
         private async Task ProcessResponsePayloadAsync(string chargepointName, ResponsePayload responsePayload)
         {
-            _logger.LogDebug($"Processing responsePayload for charger {chargepointName}");
-
-            await Task.Delay(1000);
             //Placeholder to process response payloads from charger for CentralSystem initiated commands
-            _logger.LogDebug($"Exiting Process response payload for {chargepointName}");
+            await Task.Delay(1000);
         }
 
         private async Task ProcessErrorPayloadAsync(string chargepointName, ErrorPayload errorPayload)
         {
             //Placeholder to process error payloads from charger for CentralSystem initiated commands
             await Task.Delay(1000);
-
-            _logger.LogDebug($"Exiting Process error payload for {chargepointName}");
         }
 
         private async Task RemoveConnectionsAsync(string chargepointName, WebSocket webSocket)
         {
             try
             {
-                _logger.LogDebug($"Removing connection for charger {chargepointName}");
-
                 if (activeCharger.TryRemove(chargepointName, out Charger charger))
-                    _logger.LogDebug($"Removed charger {chargepointName}");
+                {
+                    Console.WriteLine($"Removed charger {chargepointName}");
+                }
                 else
-                    _logger.LogDebug($"Cannot remove charger {chargepointName}");
+                {
+                    Console.WriteLine($"Cannot remove charger {chargepointName}");
+                }
 
                 await webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, StringConstants.ClientRequestedClosureMessage, CancellationToken.None);
-                _logger.LogDebug($"Closed websocket for charger {chargepointName}. Remaining active chargers : {activeCharger.Count}");
+                Console.WriteLine($"Closed websocket for charger {chargepointName}. Remaining active chargers : {activeCharger.Count}");
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(chargepointName,"RemoveConnectionsAsync",e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
         }
 
@@ -672,91 +643,50 @@ namespace OCPPCentralSystem.Controllers
 
         private async Task HandlePayloadsAsync(string chargepointName, WebSocket webSocket)
         {
-            _logger.LogDebug($"Entering HandlePayloads method for {chargepointName}");
-
-            try
+            while (webSocket.State == WebSocketState.Open)
             {
-                while (webSocket.State == WebSocketState.Open)
+                try
                 {
-                    try
+                    string payloadString = await ReceiveDataFromChargerAsync(webSocket, chargepointName);
+                    var payload = ProcessPayload(payloadString, chargepointName);
+
+                    if (payload != null)
                     {
-                        string payloadString = await ReceiveDataFromChargerAsync(webSocket, chargepointName);
-                        var payload = ProcessPayload(payloadString, chargepointName);
+                        JArray response = null;
 
-                        if (payload != null)
+                        //switching based on messageTypeId
+                        switch ((int)payload[0])
                         {
-                            JArray response = null;
+                            case 2:
+                                RequestPayload requestPayload = new RequestPayload(payload);
+                                response = await ProcessRequestPayloadAsync(chargepointName, requestPayload);
+                                break;
 
-                            //switching based on messageTypeId
-                            switch ((int)payload[0])
-                            {
-                                case 2:
-                                    RequestPayload requestPayload = new RequestPayload(payload);
-                                    _logger.LogTrace(JsonConvert.SerializeObject(requestPayload));
-                                    response = await ProcessRequestPayloadAsync(chargepointName, requestPayload);
-                                    break;
+                            case 3:
+                                ResponsePayload responsePayload = new ResponsePayload(payload);
+                                await ProcessResponsePayloadAsync(chargepointName, responsePayload);
+                                break;
 
-                                case 3:
-                                    ResponsePayload responsePayload = new ResponsePayload(payload);
-                                    await ProcessResponsePayloadAsync(chargepointName, responsePayload);
-                                    break;
+                            case 4:
+                                ErrorPayload errorPayload = new ErrorPayload(payload);
+                                await ProcessErrorPayloadAsync(chargepointName, errorPayload);
+                                continue;
 
-                                case 4:
-                                    ErrorPayload errorPayload = new ErrorPayload(payload);
-                                    await ProcessErrorPayloadAsync(chargepointName, errorPayload);
-                                    continue;
+                            default:
+                                break;
+                        }
 
-                                default:
-                                    break;
-                            }
-
-                            if (response != null)
-                            {
-                                await SendPayloadToChargerAsync(chargepointName, response, webSocket);
-                            }
+                        if (response != null)
+                        {
+                            await SendPayloadToChargerAsync(chargepointName, response, webSocket);
                         }
                     }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(chargepointName,"HandlePayloads - websocket - open" ,e);
-                    }
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(chargepointName,"HandlePayloads",e);
-            }
-
-            _logger.LogDebug($"Exiting HandlePayloads method for {chargepointName}");
-        }
-
-        private async Task LogPayloads(LogPayload logPayload, string chargepointName)
-        {
-            //In case LogURL is not provided
-            if(string.IsNullOrEmpty(_logURL))
-                return;
-
-            _logger.LogTrace($"Logging payloads from charger {chargepointName}");
-
-            try
-            {
-                var content = new StringContent(JsonConvert.SerializeObject(logPayload), Encoding.UTF8, StringConstants.RequestContentFormat);
-
-                using (HttpClient client = new HttpClient())
+                catch (Exception ex)
                 {
-                    var response = await client.PostAsync(_logURL, content);
-
-                    if (response.StatusCode == HttpStatusCode.OK)
-                        _logger.LogDebug($"{logPayload.Command} Payload logged successfully for {chargepointName}");
-                    else
-                        _logger.LogWarning($"{response.StatusCode} received while logging payloads for {chargepointName}.");
-
-
+                    Console.WriteLine("Exception: " + ex.Message);
+                    Console.WriteLine(ex.StackTrace);
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(chargepointName,$"LogPayload for {logPayload.Command}",e);
             }
         }
     }

@@ -14,12 +14,12 @@ namespace OCPPCentralSystem.Schemas.DTDL
         {
             // init data
             ID = string.Empty;
-            Connectors = new Dictionary<int, Connector>();
+            Connectors = new ConcurrentDictionary<int, Connector>();
         }
 
         public string ID { get; set; }
 
-        public Dictionary<int, Connector> Connectors { get; set; }
+        public ConcurrentDictionary<int, Connector> Connectors { get; set; }
     }
 
     public class Connector
