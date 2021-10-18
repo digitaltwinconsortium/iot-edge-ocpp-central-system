@@ -2,7 +2,7 @@
 
 The Central System is a server responsible for communicating with charging stations and provides user authentication, billing and charge point reservation services.
 
-##Setup
+## Setup
 
 A deployment manifest for Azure IoT Edge can be found in the /schemas/iotedge folder.
 
