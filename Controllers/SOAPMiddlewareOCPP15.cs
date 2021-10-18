@@ -38,7 +38,6 @@ namespace OCPPCentralSystem.Controllers
             Console.WriteLine("Chargepoint with identity: " + request.chargeBoxIdentity + " booted!");
 
             _gatewayClient.ChargePoint.ID = request.chargeBoxIdentity;
-            _gatewayClient.ChargePoint.Status = ChargePointStatus.Available.ToString();
 
             return new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.UtcNow, 60);
         }
@@ -163,8 +162,13 @@ namespace OCPPCentralSystem.Controllers
         {
             Console.WriteLine("Chargepoint " + request.chargeBoxIdentity + " and connector " + request.connectorId + " status#: " + request.status.ToString());
 
+            if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
+            {
+                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+            }
+
             _gatewayClient.ChargePoint.ID = request.chargeBoxIdentity;
-            _gatewayClient.ChargePoint.Status = request.status.ToString();
+            _gatewayClient.ChargePoint.Connectors[request.connectorId].Status = request.status.ToString();
 
             return new StatusNotificationResponse();
         }

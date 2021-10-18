@@ -32,7 +32,7 @@ namespace OCPPCentralSystem
             }
 
             ChargePoint = new OCPPChargePoint();
-          
+
             _trigger = new Timer(new TimerCallback(SendTelemetryAsync));
             int interval = 15000; // default to 15 seconds
             try
@@ -51,10 +51,11 @@ namespace OCPPCentralSystem
         {
             try
             {
+                string serializedMessage = JsonConvert.SerializeObject(ChargePoint);
+
                 if (_client != null)
                 {
-                    Message message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ChargePoint)));
-                    await _client.SendEventAsync(message).ConfigureAwait(false);
+                    await _client.SendEventAsync(new Message(Encoding.UTF8.GetBytes(serializedMessage))).ConfigureAwait(false);
                     _logger.LogInformation($"Gateway Client : Sent telemetry for chargepoint {ChargePoint.ID}");
                 }
             }
