@@ -49,6 +49,7 @@ namespace OCPPCentralSystem
                 }
 
                 await _client.SendEventAsync(new Message(Encoding.UTF8.GetBytes(serializedMessage))).ConfigureAwait(false);
+                Console.WriteLine("Sent to Central: " + serializedMessage);
             }
             catch (Exception ex)
             {
