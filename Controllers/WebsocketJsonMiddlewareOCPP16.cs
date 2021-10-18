@@ -1,131 +1,64 @@
-﻿/*****************************************************************************************************************
- * Author: Ajantha Dhanasekaran
- * Date: 07-Sept-2020
- * Purpose: Middleware to handle websocket connections and payload from the OCPP charger client.
- * Change History:
- * Name                         Date                    Change description
- * Ajantha Dhanasekaran         07-Sept-2020              Initial version
- * Ajantha Dhanasekaran         09-Sept-2020              Enabled json validation
- * Ajantha Dhanasekaran         15-Sept-2020              Enabled common logger
- * Ajantha Dhanasekaran         16-Sept-2020              Misc. logger changes
- * ****************************************************************************************************************/
-
-
-#region license
-
-/*
-Cognizant EV Charging Protocol Gateway 1.0
-© 2020 Cognizant. All rights reserved.
-"Cognizant EV Charging Protocol Gateway 1.0" by Cognizant  is licensed under Apache License Version 2.0
-
-
+﻿/*
 Copyright 2020 Cognizant
-
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Copyright 2021 Microsoft Corporation
 */
 
-#endregion
-
-#region Libraries
-using ChargePointOperator.Models;
 using Microsoft.AspNetCore.Http;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Threading;
-using System;
-using System.Text;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json.Schema;
-using ChargePointOperator.Models.OCPP;
-using System.Text.RegularExpressions;
-using System.Net.Http;
-using System.Net;
+using OCPPCentralSystem.Models;
+using OCPPCentralSystem.Schemas.DTDL;
+using OCPPCentralSystem.Schemas.OCPP16;
+using System;
 using System.Collections.Concurrent;
-using ChargePointOperator.Models.Internal;
-using ProtocolGateway;
-using ProtocolGateway.Models;
-using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.IO;
-#endregion
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace ChargePointOperator
+namespace OCPPCentralSystem.Controllers
 {
-    public class WebsocketMiddleware
+    public class WebsocketJsonMiddlewareOCPP16
     {
-        #region Members
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
-        private readonly Logger _logger;
-        HttpContext context;
+        private readonly Logger _logger = new Logger();
 
         private List<string> knownChargers = new List<string>();
-        public static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
-        private IGatewayClient _gatewayClient;
+        private static ConcurrentDictionary<string, Charger> activeCharger = new ConcurrentDictionary<string, Charger>();
+        private ICloudGatewayClient _gatewayClient;
+        private int _transactionNumber = 0;
         private string _logURL;
+        private OCPPChargePoint _telemetry = new OCPPChargePoint();
 
-        #endregion
-
-        #region Constructors
-        public WebsocketMiddleware(RequestDelegate next,IConfiguration configuration,IGatewayClient gatewayClient)
+        public WebsocketJsonMiddlewareOCPP16(RequestDelegate next, IConfiguration configuration, ICloudGatewayClient gatewayClient)
         {
             _next = next;
             _configuration = configuration;
-
             _logURL = _configuration["LogURL"];
-            _logger=new Logger();
-
-            _gatewayClient =gatewayClient;
-            _gatewayClient.SetSendToChargepointMethod(CallSendMethodAsync);
+            _gatewayClient = gatewayClient;
         }
 
-        public WebsocketMiddleware()
-        {
-        }
-
-        #endregion
-
-        /// <summary>
-        /// This method handles all the http request passed on by the previous middleware
-        /// </summary>
-        /// <param name="httpContext"></param>
-        /// <returns></returns>
         public async Task Invoke(HttpContext httpContext)
         {
-
-            context = httpContext;
-
             try
             {
                 _logger.LogInformation("Request starting");
 
-                //Only accepts url that contains /ocpp
-                if (httpContext.Request.Path.Value.Contains(StringConstants.RequestPath))
+                if (httpContext.WebSockets.IsWebSocketRequest)
+                {
+                    await HandleWebsockets(httpContext);
+                    return;
+                }
 
-                    //Only accepts websocket request
-                    if (httpContext.WebSockets.IsWebSocketRequest)
-                    {
-                        await HandleWebsockets(httpContext);
-
-                        return;
-                    }
-
-                //Request passed on to next middleware
+                // passed on to next middleware
                 await _next(httpContext);
             }
             catch (Exception e)
@@ -135,15 +68,9 @@ namespace ChargePointOperator
                 httpContext.Response.StatusCode=StatusCodes.Status500InternalServerError;
                 await httpContext.Response.WriteAsync("Something went wrong!!. Please check with the Central system admin");
             }
+
             _logger.LogDebug("Request finished.");
         }
-
-        /// <summary>
-        /// This method verifies whether the charger supports protoc0l OCPP1.6 or not
-        /// </summary>
-        /// <param name="httpContext"></param>
-        /// <param name="chargepointName">charger Id</param>
-        /// <returns></returns>
 
         private async Task<bool> CheckProtocolAsync(HttpContext httpContext, string chargepointName)
         {
@@ -171,17 +98,8 @@ namespace ChargePointOperator
             await socket.CloseOutputAsync(WebSocketCloseStatus.ProtocolError, errorMessage, CancellationToken.None);
 
             return false;
-
         }
 
-
-        #region WebsocketHandler
-
-        /// <summary>
-        /// This method accepts the websocket connnetion from the charger and adds it to the active chargers
-        /// </summary>
-        /// <param name="httpContext"></param>
-        /// <returns></returns>
         private async Task HandleWebsockets(HttpContext httpContext)
         {
             _logger.LogDebug($"Entering HandleWebsockets method");
@@ -194,7 +112,7 @@ namespace ChargePointOperator
 
                 if (!knownChargers.Contains(chargepointName))
                 {
-                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
                         return;
                 }
 
@@ -252,12 +170,6 @@ namespace ChargePointOperator
 
         }
 
-        /// <summary>
-        /// This method handles all the active websocket connections
-        /// </summary>
-        /// <param name="webSocket"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private async Task HandleActiveConnection(WebSocket webSocket, string chargepointName)
         {
             _logger.LogDebug($"Entering HandleActiveConnections method for {chargepointName}");
@@ -278,16 +190,6 @@ namespace ChargePointOperator
             _logger.LogDebug($"Exiting HandleActiveConnections method for {chargepointName}");
         }
 
-        #endregion
-
-        #region PayloadHandler
-
-        /// <summary>
-        /// This method receives data from the charger through websocket
-        /// </summary>
-        /// <param name="webSocket"></param>
-        /// <param name="chargepointName">charger Id</param>
-        /// <returns></returns>
         private async Task<string> ReceiveDataFromChargerAsync(WebSocket webSocket, string chargepointName)
         {
             _logger.LogDebug($"Receiving payload from charger {chargepointName}");
@@ -336,17 +238,11 @@ namespace ChargePointOperator
                 _logger.LogError(chargepointName,"ReceiveDataFromChargerAsync",e);
 
             }
+
             _logger.LogDebug($"Exiting Receive method for charger {chargepointName}");
             return null;
         }
 
-        /// <summary>
-        /// This method sends payload to the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="payload"></param>
-        /// <param name="webSocket"></param>
-        /// <returns></returns>
         private async Task SendPayloadToChargerAsync(string chargepointName, object payload, WebSocket webSocket)
         {
             _logger.LogDebug($"Sending payload to charger {chargepointName}");
@@ -372,15 +268,8 @@ namespace ChargePointOperator
             }
 
             charger.WebsocketBusy = false;
-
         }
 
-        /// <summary>
-        /// This method processes the received payload from the charger
-        /// </summary>
-        /// <param name="payloadString"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private JArray ProcessPayload(string payloadString, string chargepointName)
         {
             _logger.LogDebug($"Processing payload for charger {chargepointName}");
@@ -400,18 +289,11 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,"ProcessPayload",e);
             }
+
             _logger.LogDebug($"Exiting processpayload method for charger {chargepointName}");
             return null;
         }
 
-        /// <summary>
-        /// This method validates payload received from the charger against the COPP schema.
-        /// Remarks : Free version allows verification of first 1000 words alone.
-        /// </summary>
-        /// <param name="payload"></param>
-        /// <param name="action"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private JsonValidationResponse JsonValidation(JObject payload, string action, string chargepointName)
         {
             _logger.LogDebug($"Entering Jsonvalidation for {chargepointName}");
@@ -456,17 +338,11 @@ namespace ChargePointOperator
 
                _logger.LogError(chargepointName,"JsonValidation",e);
             }
-            _logger.LogDebug($"Exiting Jsonvalidation for {chargepointName}");
 
+            _logger.LogDebug($"Exiting Jsonvalidation for {chargepointName}");
             return response;
         }
 
-        /// <summary>
-        /// This method processes request payload received from the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="requestPayload"></param>
-        /// <returns>JArray of responsePayload or ErrorPayload</returns>
         private async Task<JArray> ProcessRequestPayloadAsync(string chargepointName, RequestPayload requestPayload)
         {
             _logger.LogDebug($"Processing requestPayload for charger {chargepointName}");
@@ -486,106 +362,216 @@ namespace ChargePointOperator
 
                     object responsePayload = null;
                     string url = string.Empty;
+                    _telemetry.ID = chargepointName;
 
                     //switching based on OCPP action name
                     switch (action)
                     {
-
-                        case "BootNotification":
-
-                            responsePayload = await _gatewayClient.SendBootNotificationAsync(requestPayload,chargepointName);
-
-                            break;
-
                         case "Authorize":
+                        {
+                            AuthorizeRequest request = requestPayload.Payload.ToObject<AuthorizeRequest>();
 
-                            await _gatewayClient.SendTransactionMessageAsync(requestPayload,chargepointName);
+                            Console.WriteLine("Authorization requested on chargepoint " + request.chargeBoxIdentity + "  and badge ID " + request.idTag);
 
-                            break;
-
-                        case "StartTransaction":
-
-                           await _gatewayClient.SendTransactionMessageAsync(requestPayload,chargepointName);
-
-                            break;
-
-                        case "StopTransaction":
-
-                           await _gatewayClient.SendTransactionMessageAsync(requestPayload,chargepointName);
-                            break;
-
-                        case "Heartbeat":
-
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new { currentTime = DateTime.UtcNow });
-                            HeartBeatRequest heartBeatRequest = new HeartBeatRequest(chargepointName);
-
-                            await _gatewayClient.SendTelemetryAsync(heartBeatRequest,chargepointName);
-
-                            break;
-
-                        case "MeterValues":
-
-
-                            MeterValues meterValues = requestPayload.Payload.ToObject<MeterValues>();
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
-
-                            foreach (var i in meterValues.MeterValue)
+                            // always authorize any badge for now
+                            IdTagInfo info = new IdTagInfo
                             {
-                                foreach (var j in i.sampledValue)
+                                expiryDateSpecified = false,
+                                status = AuthorizationStatus.Accepted
+                            };
+
+                            AuthorizeResponse response = new AuthorizeResponse(info);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                            break;
+                        }
+                        case "BootNotification":
+                        {
+                            BootNotificationRequest request = requestPayload.Payload.ToObject<BootNotificationRequest>();
+
+                            Console.WriteLine("Chargepoint with identity: " + request.chargeBoxIdentity + " booted!");
+
+                            _gatewayClient.ChargePoint.ID = request.chargeBoxIdentity;
+
+                            BootNotificationResponse response = new BootNotificationResponse(RegistrationStatus.Accepted, DateTime.UtcNow, 60);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                            break;
+                        }
+                        case "Heartbeat":
+                        {
+                            HeartbeatRequest request = requestPayload.Payload.ToObject<HeartbeatRequest>();
+
+                            Console.WriteLine("Heartbeat received from: " + request.chargeBoxIdentity);
+
+                            HeartbeatResponse response = new HeartbeatResponse(DateTime.UtcNow);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                            break;
+                        }
+                        case "MeterValues":
+                        {
+                            MeterValuesRequest request = requestPayload.Payload.ToObject<MeterValuesRequest>();
+
+                            Console.WriteLine("Meter values for connector ID " + request.connectorId + " on chargepoint " + request.chargeBoxIdentity + ":");
+
+                            if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
+                            {
+                                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                            }
+
+                            foreach (MeterValue meterValue in request.meterValue)
+                            {
+                                foreach (SampledValue sampledValue in meterValue.sampledValue)
                                 {
-                                    if (Regex.IsMatch(j.unit.ToString(), @"^(W|Wh|kWh|kW)$"))
+                                    Console.WriteLine("Value: " + sampledValue.value + " " + sampledValue.unit.ToString());
+                                    int prasedInt = 0;
+                                    if (int.TryParse(sampledValue.value, out prasedInt))
                                     {
-                                        MeterValueRequest meterValueRequest = new MeterValueRequest(j, chargepointName, meterValues.ConnectorId);
-                                        await _gatewayClient.SendTelemetryAsync(meterValueRequest,chargepointName);
+                                        MeterReading reading = new MeterReading();
+                                        reading.MeterValue = int.Parse(sampledValue.value);
+                                        if (sampledValue.unitSpecified)
+                                        {
+                                            reading.MeterValueUnit = sampledValue.unit.ToString();
+                                        }
+                                        reading.Timestamp = meterValue.timestamp;
+                                        _gatewayClient.ChargePoint.Connectors[request.connectorId].MeterReadings.Add(reading);
+                                        if (_gatewayClient.ChargePoint.Connectors[request.connectorId].MeterReadings.Count > 10)
+                                        {
+                                            _gatewayClient.ChargePoint.Connectors[request.connectorId].MeterReadings.RemoveAt(0);
+                                        }
                                     }
                                 }
-
                             }
-                            break;
 
+                            MeterValuesResponse response = new MeterValuesResponse();
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                            break;
+                        }
+                        case "StartTransaction":
+                        {
+                            StartTransactionRequest request = requestPayload.Payload.ToObject<StartTransactionRequest>();
+
+                            Console.WriteLine("Start transaction " + _transactionNumber.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " on connector " + request.connectorId + " with badge ID " + request.idTag + " and meter reading at start " + request.meterStart);
+                            if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
+                            {
+                                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                            }
+                            _transactionNumber++;
+                            Transaction transaction = new Transaction(_transactionNumber)
+                            {
+                                BadgeID = request.idTag,
+                                StartTime = request.timestamp,
+                                MeterValueStart = request.meterStart
+                            };
+
+                            if (!_gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.ContainsKey(_transactionNumber))
+                            {
+                                _gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.TryAdd(_transactionNumber, transaction);
+                            }
+
+                            KeyValuePair<int, Transaction>[] transactionsArray = _gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.ToArray();
+                            for (int i = 0; i < transactionsArray.Length; i++)
+                            {
+                                if ((transactionsArray[i].Value.StopTime != DateTime.MinValue) && (transactionsArray[i].Value.StopTime < DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))))
+                                {
+                                    _gatewayClient.ChargePoint.Connectors[request.connectorId].CurrentTransactions.TryRemove(transactionsArray[i].Key, out _);
+                                }
+                            }
+
+                            IdTagInfo info = new IdTagInfo
+                            {
+                                expiryDateSpecified = false,
+                                status = AuthorizationStatus.Accepted
+                            };
+
+                            StartTransactionResponse response = new StartTransactionResponse(_transactionNumber, info);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                            break;
+                        }
+                        case "StopTransaction":
+                        {
+                            StopTransactionRequest request = requestPayload.Payload.ToObject<StopTransactionRequest>();
+
+                            Console.WriteLine("Stop transaction " + request.transactionId.ToString() + " from " + request.timestamp + " on chargepoint " + request.chargeBoxIdentity + " with badge ID " + request.idTag + " and meter reading at stop " + request.meterStop);
+
+                            for (int i = 0; i < _gatewayClient.ChargePoint.Connectors.Count; i++)
+                            {
+                                for (int j = 0; j < _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions.Count; j++)
+                                {
+                                    if (_gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].ID == request.transactionId)
+                                    {
+                                        _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].MeterValueFinish = request.meterStop;
+                                        _gatewayClient.ChargePoint.Connectors[i].CurrentTransactions[j].StopTime = request.timestamp;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            IdTagInfo info = new IdTagInfo
+                            {
+                                expiryDateSpecified = false,
+                                status = AuthorizationStatus.Accepted
+                            };
+
+                            StopTransactionResponse response = new StopTransactionResponse(info);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
+                            break;
+                        }
                         case "StatusNotification":
+                        {
+                            StatusNotificationRequest request = requestPayload.Payload.ToObject<StatusNotificationRequest>();
 
-                            StatusNotification statusNotification = requestPayload.Payload.ToObject<StatusNotification>();
-                            responsePayload = new ResponsePayload(requestPayload.UniqueId, new object());
-                            StatusNotificationAzure statusNotificationRequest = new StatusNotificationAzure(statusNotification, chargepointName);
+                            Console.WriteLine("Chargepoint " + request.chargeBoxIdentity + " and connector " + request.connectorId + " status#: " + request.status.ToString());
 
-                            await _gatewayClient.SendTelemetryAsync(statusNotificationRequest,chargepointName);
+                            if (!_gatewayClient.ChargePoint.Connectors.ContainsKey(request.connectorId))
+                            {
+                                _gatewayClient.ChargePoint.Connectors.Add(request.connectorId, new Connector(request.connectorId));
+                            }
 
+                            _gatewayClient.ChargePoint.ID = request.chargeBoxIdentity;
+                            _gatewayClient.ChargePoint.Connectors[request.connectorId].Status = request.status.ToString();
+
+                            StatusNotificationResponse response = new StatusNotificationResponse();
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         case "DataTransfer":
-                            //<Placeholder>
+                        {
+                            DataTransferResponse response = new DataTransferResponse(DataTransferStatus.Rejected, string.Empty);
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         case "DiagnosticsStatusNotification":
-                            //<Placeholder>
+                        {
+                            DiagnosticsStatusNotificationResponse response = new DiagnosticsStatusNotificationResponse();
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         case "FirmwareStatusNotification":
-                            //<Placeholder>
+                        {
+                            FirmwareStatusNotificationResponse response = new FirmwareStatusNotificationResponse();
+                            responsePayload = new ResponsePayload(requestPayload.UniqueId, response);
                             break;
-
+                        }
                         default:
-
+                        {
                             responsePayload = new ErrorPayload(requestPayload.UniqueId, StringConstants.NotImplemented);
                             break;
-
+                        }
                     }
 
-                    if(responsePayload!=null)
+                    if (responsePayload != null)
                     {
-                    if (((BasePayload)responsePayload).MessageTypeId == 3)
-                    {
-                        ResponsePayload response = (ResponsePayload)responsePayload;
-                        await LogPayloads(new LogPayload(action, response, chargepointName), chargepointName);
-                        return response.WrappedPayload;
-                    }
-                    else
-                    {
-                        ErrorPayload error = (ErrorPayload)responsePayload;
-                        await LogPayloads(new LogPayload(action, error, chargepointName), chargepointName);
-                        return error.WrappedPayload;
-                    }
+                        if (((BasePayload)responsePayload).MessageTypeId == 3)
+                        {
+                            ResponsePayload response = (ResponsePayload)responsePayload;
+                            await LogPayloads(new LogPayload(action, response, chargepointName), chargepointName);
+                            return response.WrappedPayload;
+                        }
+                        else
+                        {
+                            ErrorPayload error = (ErrorPayload)responsePayload;
+                            await LogPayloads(new LogPayload(action, error, chargepointName), chargepointName);
+                            return error.WrappedPayload;
+                        }
                     }
 
                 }
@@ -595,7 +581,6 @@ namespace ChargePointOperator
                     GetErrorPayload(isValidPayload, errorPayload);
 
                     await LogPayloads(new LogPayload(action,errorPayload, chargepointName), chargepointName);
-
                     return errorPayload.WrappedPayload;
                 }
             }
@@ -603,17 +588,11 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,$"ProcessREquestPayload for action {action}",e);
             }
+
             _logger.LogDebug($"Exiting Process request payload for {chargepointName}");
             return null;
-
         }
 
-        /// <summary>
-        /// This method processes the response payload from the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="responsePayload"></param>
-        /// <returns></returns>
         private async Task ProcessResponsePayloadAsync(string chargepointName, ResponsePayload responsePayload)
         {
             _logger.LogDebug($"Processing responsePayload for charger {chargepointName}");
@@ -621,16 +600,8 @@ namespace ChargePointOperator
             await Task.Delay(1000);
             //Placeholder to process response payloads from charger for CentralSystem initiated commands
             _logger.LogDebug($"Exiting Process response payload for {chargepointName}");
-
         }
 
-
-        /// <summary>
-        /// This method processes error payload from the charger
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="errorPayload"></param>
-        /// <returns></returns>
         private async Task ProcessErrorPayloadAsync(string chargepointName, ErrorPayload errorPayload)
         {
             //Placeholder to process error payloads from charger for CentralSystem initiated commands
@@ -638,13 +609,6 @@ namespace ChargePointOperator
 
             _logger.LogDebug($"Exiting Process error payload for {chargepointName}");
         }
-
-        /// <summary>
-        /// This method removes connection from the activecharger dictionary
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="webSocket"></param>
-        /// <returns></returns>
 
         private async Task RemoveConnectionsAsync(string chargepointName, WebSocket webSocket)
         {
@@ -667,17 +631,13 @@ namespace ChargePointOperator
             }
         }
 
-        /// <summary>
-        /// This method gets the error payload for the given non correct request payload
-        /// </summary>
-        /// <param name="response"></param>
-        /// <param name="errorPayload"></param>
         private void GetErrorPayload(JsonValidationResponse response, ErrorPayload errorPayload)
         {
             if (response.Errors != null)
                 errorPayload.Payload = JObject.FromObject(new { Error = response.Errors });
             else
                 errorPayload.Payload = JObject.FromObject(new object());
+
             errorPayload.ErrorDescription = string.Empty;
 
             if (response.CustomErrors != null)
@@ -708,22 +668,14 @@ namespace ChargePointOperator
                         break;
                 }
 
-
         }
 
-        /// <summary>
-        /// This method receives payload ; checks the messageTypeId and calls the appropriate processing method
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="webSocket"></param>
-        /// <returns></returns>
         private async Task HandlePayloadsAsync(string chargepointName, WebSocket webSocket)
         {
             _logger.LogDebug($"Entering HandlePayloads method for {chargepointName}");
 
             try
             {
-
                 while (webSocket.State == WebSocketState.Open)
                 {
                     try
@@ -759,8 +711,9 @@ namespace ChargePointOperator
                             }
 
                             if (response != null)
+                            {
                                 await SendPayloadToChargerAsync(chargepointName, response, webSocket);
-
+                            }
                         }
                     }
                     catch (Exception e)
@@ -773,21 +726,13 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,"HandlePayloads",e);
             }
+
             _logger.LogDebug($"Exiting HandlePayloads method for {chargepointName}");
         }
 
-#endregion
-
-        /// <summary>
-        /// This method logs the payload in case LogURL appsetting is set
-        /// </summary>
-        /// <param name="logPayload"></param>
-        /// <param name="chargepointName"></param>
-        /// <returns></returns>
         private async Task LogPayloads(LogPayload logPayload, string chargepointName)
         {
-
-            //Incase LogURL is not provided
+            //In case LogURL is not provided
             if(string.IsNullOrEmpty(_logURL))
                 return;
 
@@ -813,19 +758,6 @@ namespace ChargePointOperator
             {
                 _logger.LogError(chargepointName,$"LogPayload for {logPayload.Command}",e);
             }
-
-        }
-
-        /// <summary>
-        /// This method calls the SendPayloadToCharger, this is used in the GatewayClient
-        /// </summary>
-        /// <param name="chargepointName"></param>
-        /// <param name="responsePayload"></param>
-        /// <returns></returns>
-
-        private async Task CallSendMethodAsync(string chargepointName,object responsePayload)
-        {
-            await SendPayloadToChargerAsync(chargepointName,responsePayload,activeCharger[chargepointName].WebSocket);
         }
     }
 }

@@ -12,24 +12,23 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "service.asmx",
       "environmentVariables": {
+        "RUN_TESTS": "1",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "OCPPCentralStation": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "service.asmx",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "applicationUrl": "https://192.168.0.102:5001;http://192.168.0.102:5000"
     },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "service.asmx",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/",
       "publishAllPorts": true,
       "useSSL": true
     }
