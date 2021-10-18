@@ -21,16 +21,6 @@ namespace OCPPCentralSystem
 
         public IoTCentralClient()
         {
-            try
-            {
-                _client = ModuleClient.CreateFromEnvironmentAsync().GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception: " + ex.Message);
-                Console.WriteLine(ex.StackTrace);
-            }
-
             ChargePoint = new OCPPChargePoint();
 
             _trigger = new Timer(new TimerCallback(SendTelemetryAsync));
@@ -53,10 +43,12 @@ namespace OCPPCentralSystem
             {
                 string serializedMessage = JsonConvert.SerializeObject(ChargePoint);
 
-                if (_client != null)
+                if (_client == null)
                 {
-                    await _client.SendEventAsync(new Message(Encoding.UTF8.GetBytes(serializedMessage))).ConfigureAwait(false);
+                    _client = await ModuleClient.CreateFromEnvironmentAsync().ConfigureAwait(false);
                 }
+
+                await _client.SendEventAsync(new Message(Encoding.UTF8.GetBytes(serializedMessage))).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
