@@ -51,7 +51,7 @@ jobs:
         uses: docker/metadata-action@v3.5.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      
+
       # Setup QEMU for Cross-Platform builds
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1.2.0
