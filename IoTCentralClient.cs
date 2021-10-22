@@ -7,6 +7,7 @@ using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
 using OCPPCentralSystem.Schemas.DTDL;
 using System;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Threading;
 
@@ -17,11 +18,11 @@ namespace OCPPCentralSystem
         private ModuleClient _client;
         private Timer _trigger;
 
-        public OCPPChargePoint ChargePoint { get; set; }
+        public ConcurrentDictionary<string, OCPPChargePoint> ChargePoints { get; set; }
 
         public IoTCentralClient()
         {
-            ChargePoint = new OCPPChargePoint();
+            ChargePoints = new ConcurrentDictionary<string, OCPPChargePoint>();
 
             _trigger = new Timer(new TimerCallback(SendTelemetryAsync));
             int interval = 15000; // default to 15 seconds
@@ -41,7 +42,7 @@ namespace OCPPCentralSystem
         {
             try
             {
-                string serializedMessage = JsonConvert.SerializeObject(ChargePoint);
+                string serializedMessage = JsonConvert.SerializeObject(ChargePoints);
 
                 if (_client == null)
                 {
