@@ -139,9 +139,9 @@ namespace OCPPCentralSystem
                             s15Client.StatusNotification(statusRequest);
                             Thread.Sleep(30000);
 
-                            // run 100 tests
+                            // run 10 tests
                             int meter = 0;
-                            for (int i = 0; i < 100; i++)
+                            for (int i = 0; i < 10; i++)
                             {
 
                                 // send auth for a badge
