@@ -43,13 +43,13 @@ namespace OCPPCentralSystem
             });
 
             // Injecting the Protocol gateway client
-            IoTCentralClient centralClient = new IoTCentralClient();
-            services.AddSingleton<ICloudGatewayClient>(centralClient);
+            IoTEdgeClient edgeClient = new IoTEdgeClient();
+            services.AddSingleton<ICloudGatewayClient>(edgeClient);
 
-            SOAPMiddlewareOCPP15 s15Client = new SOAPMiddlewareOCPP15(centralClient);
+            SOAPMiddlewareOCPP15 s15Client = new SOAPMiddlewareOCPP15(edgeClient);
             services.AddSingleton<I_OCPP_CentralSystemService_15>(s15Client);
 
-            SOAPMiddlewareOCPP16 s16Client = new SOAPMiddlewareOCPP16(centralClient);
+            SOAPMiddlewareOCPP16 s16Client = new SOAPMiddlewareOCPP16(edgeClient);
             services.AddSingleton<I_OCPP_CentralSystemService_16>(s16Client);
 
             if (Environment.GetEnvironmentVariable("RUN_TESTS") != null)
