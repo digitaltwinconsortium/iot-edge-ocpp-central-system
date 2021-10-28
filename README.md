@@ -2,7 +2,11 @@
 
 The Central System is a server responsible for communicating with charging stations and provides user authentication, billing and charge point reservation services. There is a companion dashboard project for this located [here](https://github.com/barnstee/EVChargingDashboard).
 
-## Setup
+## Deployment
 
-A deployment manifest for Azure IoT Edge can be found in the /schemas/iotedge folder.
+A deployment manifest for Azure IoT Edge can be found in the /schemas/iotedge folder. The cloud connectivity configuration is then automatically received from the Azure IoT Edge runtime.
+
+## Configuration Settings
+
+The environment variable "RUN_TESTS" can be set to "1" to run a simulation of 2 charging stations sending messages to the Central Station in an alternating fashion which is useful for testing purposes.
 
