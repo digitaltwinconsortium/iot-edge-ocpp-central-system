@@ -5,8 +5,7 @@ The Central System is a server responsible for communicating with charging stati
 ## Deployment
 `
 docker run ghcr.io/digitaltwinconsortium/iot-edge-ocpp-central-system:main`
-
-TODO!
+`
 
 ## Configuration Settings
 The MQTT broker receiving telemetry messages from this container is configured via environment variables:
