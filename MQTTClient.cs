@@ -57,10 +57,13 @@ namespace OCPPCentralSystem
             try
             {
                 string serializedMessage = JsonConvert.SerializeObject(ChargePoints);
+                MqttApplicationMessage message = new MqttApplicationMessageBuilder()
+                    .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+                    .WithTopic(Environment.GetEnvironmentVariable("MQTTMessageTopic"))
+                    .WithPayload(Encoding.UTF8.GetBytes(serializedMessage))
+                    .Build();
 
-                Publish(Encoding.UTF8.GetBytes(serializedMessage));
-
-                Console.WriteLine("Sent to IoT Edge: " + serializedMessage);
+                _client.PublishAsync(message).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -158,17 +161,6 @@ namespace OCPPCentralSystem
             }
 
             return int.Parse(status.Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-        }
-
-        public void Publish(byte[] payload)
-        {
-            MqttApplicationMessage message = new MqttApplicationMessageBuilder()
-                .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-                .WithTopic(Environment.GetEnvironmentVariable("MQTTMessageTopic"))
-                .WithPayload(payload)
-                .Build();
-
-            _client.PublishAsync(message).GetAwaiter().GetResult();
         }
     }
 }
