@@ -43,7 +43,7 @@ namespace OCPPCentralSystem
             });
 
             // Injecting the Protocol gateway client
-            IoTEdgeClient edgeClient = new IoTEdgeClient();
+            MQTTClient edgeClient = new MQTTClient();
             services.AddSingleton<ICloudGatewayClient>(edgeClient);
 
             SOAPMiddlewareOCPP15 s15Client = new SOAPMiddlewareOCPP15(edgeClient);
@@ -204,7 +204,6 @@ namespace OCPPCentralSystem
                     catch (Exception ex)
                     {
                         Console.WriteLine("Exception: " + ex.Message);
-                        Console.WriteLine(ex.StackTrace);
                     }
                 }
             }).ConfigureAwait(false);
