@@ -151,6 +151,7 @@ namespace OCPPCentralSystem
                 Console.WriteLine("Failed to connect to MQTT broker: " + ex.Message);
             }
         }
+
         // parses status from packet properties
         private int? GetStatus(List<MqttUserProperty> properties)
         {
