@@ -12,11 +12,11 @@ The MQTT broker receiving telemetry messages from this container is configured v
 
 * CreateMQTTSASToken - set to "1" to create a SAS token for authentication
 * UseTLS - set to "1" to use secure MQTT (MQTTS, leveraging TLS)
-* MQTTBrokerName
-* MQTTClientName
-* MQTTUsername
-* MQTTPassword
-* MQTTMessageTopic
+* MQTTBrokerName - for Azure IoT Hub, this is the Azure IoT Hub Hostname
+* MQTTClientName - for Azure IoT Hub, this is the Device ID
+* MQTTUsername - for Azure IoT Hub, this is [BrokerName]/[ClientName]/?api-version=2018-06-30
+* MQTTPassword - for Azure IoT Hub, this is the Device's Primary Key
+* MQTTMessageTopic - for Azure IoT Hub, this is devices/[ClientName]/messages/events/
 * Publishing_Interval - the interval in which OCPP telemetry messages should be sent to the MQTT broker
 
 Additionally, the environment variable "RUN_TESTS" can be set to "1" to run a simulation of 2 charging stations sending messages to the Central Station in an alternating fashion which is useful for testing purposes.
