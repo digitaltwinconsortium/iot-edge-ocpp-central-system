@@ -5,9 +5,7 @@ Copyright 2021 Microsoft Corporation
 
 using MQTTnet;
 using MQTTnet.Adapter;
-using MQTTnet.Client;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Options;
+using MQTTnet.Exceptions;
 using MQTTnet.Packets;
 using MQTTnet.Protocol;
 using Newtonsoft.Json;
@@ -98,20 +96,20 @@ namespace OCPPCentralSystem
                 }
 
                 // create MQTT client
-                _client = new MqttFactory().CreateMqttClient();
+                _client = new MqttClientFactory().CreateMqttClient();
                 var clientOptions = new MqttClientOptionsBuilder()
                     .WithTcpServer(opt => opt.NoDelay = true)
                     .WithClientId(Environment.GetEnvironmentVariable("MQTTClientName"))
                     .WithTcpServer(Environment.GetEnvironmentVariable("MQTTBrokerName"), !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("UseTLS")) ? 8883 : 1883)
-                    .WithTls(new MqttClientOptionsBuilderTlsParameters { UseTls = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("UseTLS")) })
+                    .WithTlsOptions(new MqttClientTlsOptions { UseTls = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("UseTLS")) })
                     .WithProtocolVersion(MQTTnet.Formatter.MqttProtocolVersion.V311)
-                    .WithCommunicationTimeout(TimeSpan.FromSeconds(10))
+                    .WithTimeout(TimeSpan.FromSeconds(10))
                     .WithKeepAlivePeriod(TimeSpan.FromSeconds(100))
                     .WithCleanSession(true) // clear existing subscriptions 
                     .WithCredentials(Environment.GetEnvironmentVariable("MQTTUsername"), password);
 
                 // setup disconnection handling
-                _client.UseDisconnectedHandler(disconnectArgs =>
+                _client.DisconnectedAsync += disconnectArgs =>
                 {
                     Console.WriteLine($"Disconnected from MQTT broker: {disconnectArgs.Reason}");
 
@@ -121,7 +119,9 @@ namespace OCPPCentralSystem
                     {
                         Connect();
                     }
-                });
+
+                    return Task.CompletedTask;
+                };
 
                 try
                 {
@@ -134,14 +134,14 @@ namespace OCPPCentralSystem
 
                     Console.WriteLine("Connected to MQTT broker.");
                 }
-                catch (MqttConnectingFailedException ex)
+                catch (MqttCommunicationException ex)
                 {
-                    Console.WriteLine($"Failed to connect with reason {ex.ResultCode} and message: {ex.Message}");
-                    if (ex.Result?.UserProperties != null)
+                    Console.WriteLine($"Failed to connect with reason {ex.HResult} and message: {ex.Message}");
+                    if ((ex.Data != null) && (ex.Data.Count > 0))
                     {
-                        foreach (var prop in ex.Result.UserProperties)
+                        foreach (var prop in ex.Data)
                         {
-                            Console.WriteLine($"{prop.Name}: {prop.Value}");
+                            Console.WriteLine($"{prop.ToString()}");
                         }
                     }
                 }
